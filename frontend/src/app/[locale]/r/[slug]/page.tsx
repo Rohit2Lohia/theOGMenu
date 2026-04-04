@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import styles from '../../m/[restaurantId]/page.module.css'; // Reuse existing styles
 import FoodTypeIcon from '@/components/FoodTypeIcon';
+import MenuHero from '@/components/MenuHero';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -16,6 +17,7 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
   const [error, setError] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   useEffect(() => {
     async function loadPublicData() {
@@ -71,100 +73,160 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-gray-50)' }}>
-      {/* Header Info */}
-      <header className="glass" style={{ position: 'sticky', top: 0, zIndex: 10, padding: '1rem', borderBottom: '1px solid var(--color-gray-200)', background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(10px)' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', textAlign: 'center', fontSize: 'var(--text-xl)', color: 'var(--color-gray-900)' }}>
-          {restaurant?.name || menu.name}
-        </h1>
-        
-        {/* Category navigator (Pill Menu) */}
-        <div style={{ display: 'flex', overflowX: 'auto', gap: '0.5rem', marginTop: '1rem', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
-          {menu.categories.map((cat: any) => (
+    <div style={{ minHeight: '100vh', background: 'var(--color-white)' }}>
+      {/* Hero Section */}
+      <MenuHero 
+        restaurantName={restaurant?.name || menu.name}
+        logoUrl={restaurant?.logo_url}
+        tagline={restaurant?.description}
+        images={gallery.map(img => img.url)}
+      />
+
+      {/* Header / Navigation */}
+      <header style={{ 
+        position: 'sticky', 
+        top: 0, 
+        zIndex: 100, 
+        background: 'var(--color-secondary)', 
+        padding: '0.75rem 0',
+        boxShadow: 'var(--shadow-md)'
+      }}>
+        <div className="container" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+          {/* Category navigator (Sleek Horizontal Scroll) */}
+          <div style={{ 
+            display: 'flex', 
+            overflowX: 'auto', 
+            gap: '1.5rem', 
+            padding: '0 0.5rem',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+            flex: 1,
+            opacity: isSearchExpanded ? 0.3 : 1,
+            transition: 'opacity 0.3s ease',
+            pointerEvents: isSearchExpanded ? 'none' : 'auto'
+          }}>
+            {menu.categories.map((cat: any) => (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  setActiveCategory(cat.id);
+                  const el = document.getElementById(`cat-${cat.id}`);
+                  if (el) {
+                    const offset = 80; // height of sticky header
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = el.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                      top: offsetPosition,
+                      behavior: 'smooth'
+                    });
+                  }
+                }}
+                style={{
+                  color: activeCategory === cat.id ? 'var(--color-accent)' : '#94A3B8',
+                  fontSize: 'var(--text-sm)',
+                  borderRadius: 0,
+                  border: 'none',
+                  borderBottom: activeCategory === cat.id ? '2px solid var(--color-accent)' : '2px solid transparent',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  padding: '0.5rem 0',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Improved Expandable Search Bar */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            position: 'relative',
+            width: isSearchExpanded ? '100%' : '40px',
+            maxWidth: isSearchExpanded ? '280px' : '40px',
+            height: '40px',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            marginLeft: 'auto'
+          }}>
             <button
-              key={cat.id}
-              onClick={() => {
-                setActiveCategory(cat.id);
-                document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
+              onClick={() => setIsSearchExpanded(true)}
               style={{
-                background: activeCategory === cat.id ? 'var(--color-primary)' : 'var(--color-gray-100)',
-                color: activeCategory === cat.id ? 'var(--color-white)' : 'var(--color-gray-700)',
-                padding: '0.5rem 1.25rem',
-                fontSize: 'var(--text-sm)',
-                borderRadius: '999px',
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                background: 'none',
                 border: 'none',
+                color: isSearchExpanded ? 'var(--color-accent)' : '#94A3B8',
+                fontSize: '1.2rem',
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                fontWeight: 600,
-                transition: 'all 0.2s ease',
-                boxShadow: activeCategory === cat.id ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none'
+                zIndex: 10,
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: isSearchExpanded ? 'none' : 'auto',
+                transition: 'color 0.3s ease'
               }}
             >
-              {cat.name}
-            </button>
-          ))}
-          {gallery.length > 0 && (
-             <button
-              onClick={() => {
-                setActiveCategory('gallery');
-                document.getElementById(`gallery-section`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              style={{
-                background: activeCategory === 'gallery' ? 'var(--color-primary)' : 'var(--color-gray-100)',
-                color: activeCategory === 'gallery' ? 'var(--color-white)' : 'var(--color-gray-700)',
-                padding: '0.5rem 1.25rem',
-                fontSize: 'var(--text-sm)',
-                borderRadius: '999px',
-                border: 'none',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                fontWeight: 600,
-                transition: 'all 0.2s ease'
-              }}
-             >
-               Photo Gallery
-             </button>
-          )}
-        </div>
-
-        {/* Search Bar */}
-        <div style={{ marginTop: '1rem' }}>
-          <div style={{ position: 'relative' }}>
-            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }}>
               🔍
-            </span>
+            </button>
             <input
               type="text"
-              placeholder="Search dishes, tags, or ingredients..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onBlur={() => { if (!searchQuery) setIsSearchExpanded(false); }}
               style={{
-                width: '100%',
-                padding: '0.75rem 1rem 0.75rem 2.75rem',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--color-gray-200)',
-                background: 'var(--color-gray-50)',
+                width: isSearchExpanded ? '100%' : '0',
+                padding: isSearchExpanded ? '0.5rem 2.5rem 0.5rem 2.5rem' : '0',
+                opacity: isSearchExpanded ? 1 : 0,
+                borderRadius: 'var(--radius-full)',
+                border: isSearchExpanded ? '1px solid var(--color-gray-700)' : '1px solid transparent',
+                background: 'rgba(255, 255, 255, 0.08)',
+                color: 'white',
                 fontSize: 'var(--text-sm)',
                 outline: 'none',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: isSearchExpanded ? 'text' : 'pointer'
               }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--color-primary)')}
-              onBlur={(e) => (e.target.style.borderColor = 'var(--color-gray-200)')}
+              autoFocus={isSearchExpanded}
             />
-            {searchQuery && (
+            {isSearchExpanded && (
               <button
-                onClick={() => setSearchQuery('')}
+                onClick={() => {
+                  setSearchQuery('');
+                  setIsSearchExpanded(false);
+                }}
                 style={{
                   position: 'absolute',
-                  right: '1rem',
+                  right: '0.25rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
-                  color: 'var(--color-gray-400)',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   cursor: 'pointer',
-                  fontSize: '1rem'
+                  fontSize: '0.85rem',
+                  zIndex: 11
                 }}
               >
                 ✕
@@ -175,7 +237,7 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
       </header>
 
       {/* Menu Content */}
-      <main style={{ padding: '1rem', paddingBottom: '6rem' }}>
+      <main className="container" style={{ paddingBottom: '6rem', marginTop: '3rem' }}>
         {menu.categories.map((cat: any) => {
           const filteredItems = cat.items.filter((item: any) => {
             if (!item.is_available) return false;
@@ -192,26 +254,29 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
           if (searchQuery.trim() && filteredItems.length === 0) return null;
 
           return (
-            <div key={cat.id} id={`cat-${cat.id}`} style={{ marginBottom: '2.5rem', scrollMarginTop: '180px' }}>
-              <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '1.25rem', color: 'var(--color-gray-800)', borderBottom: '2px solid var(--color-primary-100)', paddingBottom: '0.5rem', display: 'inline-block' }}>{cat.name}</h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div key={cat.id} id={`cat-${cat.id}`} style={{ marginBottom: '4rem', scrollMarginTop: '180px' }}>
+              <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                <h2 className="menu-category-title">{cat.name}</h2>
+              </div>
+              <div className="menu-grid">
                 {filteredItems.map((item: any) => (
-                  <div key={item.id} className="card hover-effect" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', borderRadius: 'var(--radius-lg)' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                        <FoodTypeIcon type={item.food_type} />
-                        <strong style={{ fontSize: 'var(--text-lg)', color: 'var(--color-gray-900)' }}>{item.name}</strong>
-                        {item.calories && (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--color-gray-400)', fontWeight: 500, marginLeft: '0.25rem' }}>
-                            ({item.calories} kcal)
-                          </span>
-                        )}
+                  <div key={item.id} style={{ marginBottom: '1.5rem' }}>
+                    <div className="menu-item-header">
+                      <div className="menu-item-name-box">
+                        <FoodTypeIcon type={item.food_type} size={14} />
+                        <span className="menu-item-name">
+                          {item.name}
+                          {item.calories && (
+                            <span style={{ fontSize: '0.75rem', color: 'var(--color-gray-400)', fontWeight: 400, marginLeft: '0.5rem', fontFamily: 'var(--font-primary)' }}>
+                              ({item.calories} kcal)
+                            </span>
+                          )}
+                        </span>
                       </div>
-                      {item.description && <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem', marginBottom: '0.25rem', lineHeight: '1.4' }}>{item.description}</p>}
-                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
-                      </div>
-                      <div style={{ fontWeight: 700, color: 'var(--color-primary)', fontSize: '1.1rem' }}>₹{item.price}</div>
+                      <div className="menu-item-dots"></div>
+                      <span className="menu-item-price">₹{item.price}</span>
                     </div>
+                    {item.description && <p className="menu-item-desc">{item.description}</p>}
                   </div>
                 ))}
               </div>

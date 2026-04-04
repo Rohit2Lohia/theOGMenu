@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Google Fonts ────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* ── CSS Variables / Design Tokens ───────────────────────── */
 :root {
@@ -17,12 +17,13 @@
   --color-primary-600: #E55A25;
   --color-primary-700: #C44A1A;
 
-  --color-secondary: #1A1A2E;
-  --color-secondary-light: #16213E;
-  --color-secondary-dark: #0F0F1A;
+  --color-secondary: #0F172A;
+  --color-secondary-light: #1E293B;
+  --color-secondary-dark: #020617;
 
-  --color-accent: #FFB830;
-  --color-accent-light: #FFD06B;
+  --color-accent: #C5A059; /* Gold/Brass professional accent */
+  --color-accent-light: #D4B982;
+  --color-accent-dark: #9A7B3E;
 
   /* Semantic Colors */
   --color-success: #22C55E;
@@ -57,6 +58,7 @@
   /* Typography */
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Outfit', 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -238,7 +240,79 @@ input, textarea, select {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+  white-space: nowrap;
   border-width: 0;
+}
+
+/* ── Menu Specific Utilities ────────────────────────────── */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 4rem;
+    row-gap: 3rem;
+  }
+}
+
+.menu-item-header {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.menu-item-name-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.menu-item-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--color-gray-900);
+}
+
+.menu-item-dots {
+  flex-grow: 1;
+  border-bottom: 1px dotted var(--color-gray-300);
+  margin: 0 0.5rem;
+  position: relative;
+  top: -2px; /* align dots with text baseline center */
+}
+
+.menu-item-price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.menu-item-desc {
+  font-size: var(--text-sm);
+  color: var(--color-gray-500);
+  line-height: 1.5;
+  margin-top: 0.25rem;
+  max-width: 90%;
+}
+
+.menu-category-title {
+  font-family: var(--font-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent-dark);
+  border-bottom: 2px solid var(--color-accent-light);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+  margin-bottom: 2rem;
 }
 
 /* ── Button System ───────────────────────────────────────── */
