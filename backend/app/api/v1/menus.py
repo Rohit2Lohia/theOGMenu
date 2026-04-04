@@ -242,7 +242,9 @@ async def get_public_menu(
                         "food_type": item.food_type,
                         "is_available": item.is_available,
                         "is_bestseller": item.is_bestseller,
-                        "is_spicy": item.is_spicy
+                        "is_spicy": item.is_spicy,
+                        "calories": item.calories,
+                        "tags": item.tags
                     }
                     for item in cat.items if item.is_available
                 ]
@@ -300,7 +302,9 @@ async def get_stable_public_menu(
                         "food_type": item.food_type,
                         "is_available": item.is_available,
                         "is_bestseller": item.is_bestseller,
-                        "is_spicy": item.is_spicy
+                        "is_spicy": item.is_spicy,
+                        "calories": item.calories,
+                        "tags": item.tags
                     }
                     for item in cat.items if item.is_available
                 ]

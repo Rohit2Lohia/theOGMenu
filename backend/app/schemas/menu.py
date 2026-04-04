@@ -81,6 +81,8 @@ class ItemCreate(BaseModel):
     is_new: bool = False
     is_spicy: bool = False
     is_available: bool = True
+    calories: Optional[int] = None
+    tags: Optional[list[str]] = None
     allergens: Optional[list] = None
     variants: Optional[dict] = None
     addons: Optional[list] = None
@@ -100,6 +102,8 @@ class ItemUpdate(BaseModel):
     is_new: Optional[bool] = None
     is_spicy: Optional[bool] = None
     is_available: Optional[bool] = None
+    calories: Optional[int] = None
+    tags: Optional[list[str]] = None
     allergens: Optional[list] = None
     variants: Optional[dict] = None
     addons: Optional[list] = None
@@ -121,6 +125,8 @@ class ItemResponse(BaseModel):
     is_new: bool
     is_spicy: bool
     is_available: bool
+    calories: Optional[int] = None
+    tags: Optional[list[str]] = None
     allergens: Optional[list] = None
     variants: Optional[dict] = None
     addons: Optional[list] = None

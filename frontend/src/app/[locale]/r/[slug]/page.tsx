@@ -15,6 +15,7 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function loadPublicData() {
@@ -126,30 +127,120 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
              </button>
           )}
         </div>
+
+        {/* Search Bar */}
+        <div style={{ marginTop: '1rem' }}>
+          <div style={{ position: 'relative' }}>
+            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-gray-400)' }}>
+              🔍
+            </span>
+            <input
+              type="text"
+              placeholder="Search dishes, tags, or ingredients..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem 0.75rem 2.75rem',
+                borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--color-gray-200)',
+                background: 'var(--color-gray-50)',
+                fontSize: 'var(--text-sm)',
+                outline: 'none',
+                transition: 'all 0.2s ease'
+              }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--color-primary)')}
+              onBlur={(e) => (e.target.style.borderColor = 'var(--color-gray-200)')}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-gray-400)',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
       {/* Menu Content */}
       <main style={{ padding: '1rem', paddingBottom: '6rem' }}>
-        {menu.categories.map((cat: any) => (
-          <div key={cat.id} id={`cat-${cat.id}`} style={{ marginBottom: '2.5rem', scrollMarginTop: '140px' }}>
-            <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '1.25rem', color: 'var(--color-gray-800)', borderBottom: '2px solid var(--color-primary-100)', paddingBottom: '0.5rem', display: 'inline-block' }}>{cat.name}</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {cat.items.filter((i: any) => i.is_available).map((item: any) => (
-                <div key={item.id} className="card hover-effect" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', borderRadius: 'var(--radius-lg)' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                      <FoodTypeIcon type={item.food_type} />
-                      <strong style={{ fontSize: 'var(--text-lg)', color: 'var(--color-gray-900)' }}>{item.name}</strong>
+        {menu.categories.map((cat: any) => {
+          const filteredItems = cat.items.filter((item: any) => {
+            if (!item.is_available) return false;
+            if (!searchQuery.trim()) return true;
+            
+            const query = searchQuery.toLowerCase();
+            const nameMatch = item.name.toLowerCase().includes(query);
+            const descMatch = item.description?.toLowerCase().includes(query);
+            const tagsMatch = item.tags?.some((tag: string) => tag.toLowerCase().includes(query));
+            
+            return nameMatch || descMatch || tagsMatch;
+          });
+
+          if (searchQuery.trim() && filteredItems.length === 0) return null;
+
+          return (
+            <div key={cat.id} id={`cat-${cat.id}`} style={{ marginBottom: '2.5rem', scrollMarginTop: '180px' }}>
+              <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '1.25rem', color: 'var(--color-gray-800)', borderBottom: '2px solid var(--color-primary-100)', paddingBottom: '0.5rem', display: 'inline-block' }}>{cat.name}</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {filteredItems.map((item: any) => (
+                  <div key={item.id} className="card hover-effect" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', borderRadius: 'var(--radius-lg)' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                        <FoodTypeIcon type={item.food_type} />
+                        <strong style={{ fontSize: 'var(--text-lg)', color: 'var(--color-gray-900)' }}>{item.name}</strong>
+                        {item.calories && (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--color-gray-400)', fontWeight: 500, marginLeft: '0.25rem' }}>
+                            ({item.calories} kcal)
+                          </span>
+                        )}
+                      </div>
+                      {item.description && <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem', marginBottom: '0.25rem', lineHeight: '1.4' }}>{item.description}</p>}
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+                      </div>
+                      <div style={{ fontWeight: 700, color: 'var(--color-primary)', fontSize: '1.1rem' }}>₹{item.price}</div>
                     </div>
-                    {item.description && <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem', marginBottom: '0.75rem', lineHeight: '1.4' }}>{item.description}</p>}
-                    <div style={{ fontWeight: 700, color: 'var(--color-primary)', fontSize: '1.1rem' }}>₹{item.price}</div>
                   </div>
-                </div>
-              ))}
-              {cat.items.filter((i: any) => i.is_available).length === 0 && <p style={{ fontStyle: 'italic', color: 'var(--color-gray-400)' }}>No items available today.</p>}
+                ))}
+              </div>
             </div>
+          );
+        })}
+
+        {/* No Results Message */}
+        {searchQuery.trim() && !menu.categories.some((cat: any) => 
+          cat.items.some((item: any) => {
+            if (!item.is_available) return false;
+            const query = searchQuery.toLowerCase();
+            return item.name.toLowerCase().includes(query) || 
+                   item.description?.toLowerCase().includes(query) || 
+                   item.tags?.some((tag: string) => tag.toLowerCase().includes(query));
+          })
+        ) && (
+          <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--color-gray-500)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🥗</div>
+            <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: '0.5rem' }}>No dishes found</h3>
+            <p>Try searching for something else or browse the categories.</p>
+            <button 
+              onClick={() => setSearchQuery('')}
+              style={{ marginTop: '1.5rem', color: 'var(--color-primary)', background: 'none', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+            >
+              Clear Search
+            </button>
           </div>
-        ))}
+        )}
 
         {/* Gallery Section */}
         {gallery.length > 0 && (

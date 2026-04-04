@@ -40,6 +40,8 @@ class Item(Base, UUIDMixin, TimestampMixin):
     is_new: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_spicy: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_available: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    calories: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    tags: Mapped[list | None] = mapped_column(JSONB, nullable=True, default=list)
     allergens: Mapped[list | None] = mapped_column(JSONB, nullable=True, default=list)
     variants: Mapped[dict | None] = mapped_column(
         JSONB, nullable=True, default=dict

@@ -25,7 +25,7 @@ export default function MenuEditorPage() {
   
   const [newCatName, setNewCatName] = useState('');
   const [activeNewItemCat, setActiveNewItemCat] = useState<string | null>(null);
-  const [newItem, setNewItem] = useState({ name: '', price: '', desc: '', type: 'veg' });
+  const [newItem, setNewItem] = useState({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' });
 
   // Editing State
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
@@ -247,11 +247,13 @@ export default function MenuEditorPage() {
         price: parseFloat(newItem.price),
         description: newItem.desc,
         food_type: newItem.type,
+        calories: newItem.calories ? parseInt(newItem.calories) : null,
+        tags: newItem.tags ? newItem.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
         is_available: true
       });
       setItemsMap({ ...itemsMap, [catId]: [...(itemsMap[catId] || []), added] });
       setActiveNewItemCat(null);
-      setNewItem({ name: '', price: '', desc: '', type: 'veg' });
+      setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' });
       setToast({ message: `Item "${added.name}" added!`, type: 'success' });
     } catch (err: any) {
       setToast({ message: 'Failed to add item: ' + err.message, type: 'error' });
@@ -269,14 +271,16 @@ export default function MenuEditorPage() {
         name: newItem.name,
         price: parseFloat(newItem.price),
         description: newItem.desc,
-        food_type: newItem.type
+        food_type: newItem.type,
+        calories: newItem.calories ? parseInt(newItem.calories) : null,
+        tags: newItem.tags ? newItem.tags.split(',').map(t => t.trim()).filter(Boolean) : []
       });
       setItemsMap({
         ...itemsMap,
         [catId]: itemsMap[catId].map(i => i.id === editingItemId ? updated : i)
       });
       setEditingItemId(null);
-      setNewItem({ name: '', price: '', desc: '', type: 'veg' });
+      setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' });
       setToast({ message: `Item "${updated.name}" updated!`, type: 'success' });
     } catch (err: any) {
       setToast({ message: 'Failed to update item: ' + err.message, type: 'error' });
@@ -314,7 +318,9 @@ export default function MenuEditorPage() {
       name: item.name,
       price: item.price.toString(),
       desc: item.description || '',
-      type: item.food_type
+      type: item.food_type,
+      calories: item.calories?.toString() || '',
+      tags: item.tags?.join(', ') || ''
     });
   }
 
@@ -482,9 +488,13 @@ export default function MenuEditorPage() {
                             />
                             <input type="text" placeholder="Short description..." className="input sm" value={newItem.desc} onChange={e => setNewItem({...newItem, desc: e.target.value})} />
                           </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                            <input type="number" placeholder="Calories" className="input sm" value={newItem.calories} onChange={e => setNewItem({...newItem, calories: e.target.value})} />
+                            <input type="text" placeholder="Tags (comma separated)" className="input sm" value={newItem.tags} onChange={e => setNewItem({...newItem, tags: e.target.value})} />
+                          </div>
                           <div style={{ display: 'flex', gap: '0.75rem' }}>
                             <button type="submit" className="btn btn-primary btn-sm">Update Item</button>
-                            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditingItemId(null); setNewItem({ name: '', price: '', desc: '', type: 'veg' }); }}>Cancel</button>
+                            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditingItemId(null); setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' }); }}>Cancel</button>
                           </div>
                         </form>
                       ) : (
@@ -494,6 +504,13 @@ export default function MenuEditorPage() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                               <FoodTypeIcon type={item.food_type} />
                               <strong style={{ fontSize: 'var(--text-base)' }}>{item.name}</strong>
+                            </div>
+                            {item.description && <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem', marginBottom: '0.25rem', lineHeight: '1.4' }}>{item.description}</p>}
+                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+                              {item.calories && <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', background: 'var(--color-gray-100)', borderRadius: '4px', color: 'var(--color-gray-600)' }}>{item.calories} kcal</span>}
+                              {item.tags?.map((tag: string, i: number) => (
+                                <span key={i} style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', background: 'var(--color-primary-50)', borderRadius: '4px', color: 'var(--color-primary)' }}>{tag}</span>
+                              ))}
                             </div>
                             <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem' }}>₹{item.price}</div>
                           </div>
@@ -549,6 +566,10 @@ export default function MenuEditorPage() {
                         onChange={(val) => setNewItem({...newItem, type: val})} 
                       />
                       <input type="text" placeholder="Short description..." className="input" value={newItem.desc} onChange={e => setNewItem({...newItem, desc: e.target.value})} />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                      <input type="number" placeholder="Calories (kcal)" className="input" value={newItem.calories} onChange={e => setNewItem({...newItem, calories: e.target.value})} />
+                      <input type="text" placeholder="Tags (e.g. Vegan, Gluten-Free)" className="input" value={newItem.tags} onChange={e => setNewItem({...newItem, tags: e.target.value})} />
                     </div>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                       <button type="submit" className="btn btn-primary">Add Item</button>
