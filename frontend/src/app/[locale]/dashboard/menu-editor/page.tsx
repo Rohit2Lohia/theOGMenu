@@ -481,14 +481,14 @@ export default function MenuEditorPage() {
                             <input type="text" className="input sm" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} required />
                             <input type="number" className="input sm" value={newItem.price} onChange={e => setNewItem({...newItem, price: e.target.value})} required />
                           </div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(140px, auto) 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
                             <FoodTypeSelect 
                               value={newItem.type as FoodType} 
                               onChange={(val) => setNewItem({...newItem, type: val})} 
                             />
                             <input type="text" placeholder="Short description..." className="input sm" value={newItem.desc} onChange={e => setNewItem({...newItem, desc: e.target.value})} />
                           </div>
-                          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(140px, auto) 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
                             <input type="number" placeholder="Calories" className="input sm" value={newItem.calories} onChange={e => setNewItem({...newItem, calories: e.target.value})} />
                             <input type="text" placeholder="Tags (comma separated)" className="input sm" value={newItem.tags} onChange={e => setNewItem({...newItem, tags: e.target.value})} />
                           </div>

@@ -44,7 +44,7 @@ export default function FoodTypeSelect({ value, onChange, className = '' }: Food
       style={{ 
         position: 'relative', 
         width: '100%',
-        minWidth: '160px'
+        minWidth: '120px'
       }}
     >
       <button
