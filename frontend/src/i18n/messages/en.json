@@ -1,0 +1,141 @@
+{
+  "common": {
+    "appName": "theOGMenu",
+    "tagline": "Digital QR Menus for Indian Restaurants",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "viewAll": "View All",
+    "noResults": "No results found",
+    "error": "Something went wrong",
+    "retry": "Retry"
+  },
+  "auth": {
+    "title": "Welcome to theOGMenu",
+    "subtitle": "Create beautiful digital menus for your restaurant",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+91 98765 43210",
+    "sendOTP": "Send OTP",
+    "otpLabel": "Enter OTP",
+    "otpPlaceholder": "Enter 6-digit code",
+    "verifyOTP": "Verify OTP",
+    "resendOTP": "Resend OTP",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "Enter your name",
+    "setupProfile": "Set Up Profile",
+    "loginSuccess": "Login successful!",
+    "invalidOTP": "Invalid OTP. Please try again.",
+    "otpSent": "OTP sent to your phone"
+  },
+  "landing": {
+    "hero": {
+      "title": "Your Restaurant Menu,",
+      "titleHighlight": "Digitally Delicious",
+      "subtitle": "Create stunning QR-code menus that your customers will love. Free for Indian restaurants.",
+      "cta": "Get Started Free",
+      "secondaryCta": "See Demo Menu"
+    },
+    "features": {
+      "title": "Everything You Need",
+      "qr": {
+        "title": "QR Code Menus",
+        "description": "Generate branded QR codes that open beautiful digital menus instantly"
+      },
+      "multilingual": {
+        "title": "Multi-Language",
+        "description": "Serve customers in English, Hindi, and more regional languages"
+      },
+      "gallery": {
+        "title": "Photo Gallery",
+        "description": "Showcase your restaurant ambience and signature dishes"
+      },
+      "reviews": {
+        "title": "Customer Reviews",
+        "description": "Collect and display customer experiences right on your menu"
+      },
+      "google": {
+        "title": "Google Integration",
+        "description": "Link your Google Business page for easy reviews and directions"
+      },
+      "realtime": {
+        "title": "Real-time Updates",
+        "description": "Update prices, availability, and specials instantly"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "nav": {
+      "overview": "Overview",
+      "menuEditor": "Menu Editor",
+      "gallery": "Gallery",
+      "qrCodes": "QR Codes",
+      "reviews": "Reviews",
+      "settings": "Settings"
+    },
+    "stats": {
+      "totalScans": "Total Scans",
+      "menuItems": "Menu Items",
+      "reviews": "Reviews",
+      "galleryPhotos": "Gallery Photos"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "addItem": "Add Menu Item",
+      "generateQR": "Generate QR Code",
+      "uploadPhoto": "Upload Photo",
+      "viewMenu": "View Live Menu"
+    }
+  },
+  "menu": {
+    "searchPlaceholder": "Search dishes...",
+    "filterAll": "All",
+    "filterVeg": "Veg",
+    "filterNonVeg": "Non-Veg",
+    "filterVegan": "Vegan",
+    "bestseller": "Bestseller",
+    "new": "New",
+    "spicy": "Spicy",
+    "unavailable": "Currently Unavailable",
+    "variants": "Variants",
+    "addons": "Add-ons",
+    "orderViaWhatsapp": "Order via WhatsApp",
+    "viewGallery": "View Gallery",
+    "viewReviews": "Customer Experiences",
+    "operatingHours": "Operating Hours",
+    "getDirections": "Get Directions",
+    "callRestaurant": "Call Restaurant",
+    "shareMenu": "Share Menu"
+  },
+  "reviews": {
+    "title": "Customer Experiences",
+    "writeReview": "Write a Review",
+    "yourName": "Your Name",
+    "yourRating": "Your Rating",
+    "yourComment": "Tell us about your experience",
+    "submitReview": "Submit Review",
+    "thankYou": "Thank you for your review!",
+    "pending": "Your review is pending approval"
+  },
+  "gallery": {
+    "title": "Photo Gallery",
+    "categories": {
+      "all": "All",
+      "food": "Food",
+      "ambience": "Ambience",
+      "events": "Events"
+    }
+  }
+}

@@ -1,0 +1,193 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { notFound } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import styles from './page.module.css';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+export default function CustomerMenuPage({ params }: { params: { restaurantId: string } }) {
+  const [menu, setMenu] = useState<any>(null);
+  const [restaurant, setRestaurant] = useState<any>(null);
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadPublicData() {
+      try {
+        // 1. Fetch Menu
+        const menuRes = await fetch(`${API_BASE}/public/menus/${params.restaurantId}`);
+        if (!menuRes.ok) throw new Error('Menu fetch failed');
+        const menuData = await menuRes.json();
+        setMenu(menuData);
+        
+        if (menuData.categories?.length > 0) {
+          setActiveCategory(menuData.categories[0].id);
+        }
+
+        // 2. Fetch Restaurant Data for Maps link and Info
+        if (menuData.restaurant_id) {
+          const restRes = await fetch(`${API_BASE}/restaurants/public/id/${menuData.restaurant_id}`);
+          if (restRes.ok) {
+            setRestaurant(await restRes.json());
+          }
+
+          // 3. Fetch Gallery
+          const galRes = await fetch(`${API_BASE}/restaurants/${menuData.restaurant_id}/gallery`);
+          if (galRes.ok) {
+            setGallery(await galRes.json());
+          }
+        }
+      } catch (err) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPublicData();
+  }, [params.restaurantId]);
+
+  if (loading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-gray-50)' }}>
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (error || !menu) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-gray-500)' }}>
+        <h3>Menu not found 😕</h3>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--color-gray-50)' }}>
+      {/* Header Info */}
+      <header className="glass" style={{ position: 'sticky', top: 0, zIndex: 10, padding: '1rem', borderBottom: '1px solid var(--color-gray-200)', background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(10px)' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', textAlign: 'center', fontSize: 'var(--text-xl)', color: 'var(--color-gray-900)' }}>
+          {restaurant?.name || menu.name}
+        </h1>
+        
+        {/* Category navigator (Pill Menu) */}
+        <div style={{ display: 'flex', overflowX: 'auto', gap: '0.5rem', marginTop: '1rem', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+          {menu.categories.map((cat: any) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setActiveCategory(cat.id);
+                document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              style={{
+                background: activeCategory === cat.id ? 'var(--color-primary)' : 'var(--color-gray-100)',
+                color: activeCategory === cat.id ? 'var(--color-white)' : 'var(--color-gray-700)',
+                padding: '0.5rem 1.25rem',
+                fontSize: 'var(--text-sm)',
+                borderRadius: '999px',
+                border: 'none',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                fontWeight: 600,
+                transition: 'all 0.2s ease',
+                boxShadow: activeCategory === cat.id ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none'
+              }}
+            >
+              {cat.name}
+            </button>
+          ))}
+          {gallery.length > 0 && (
+             <button
+              onClick={() => {
+                setActiveCategory('gallery');
+                document.getElementById(`gallery-section`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              style={{
+                background: activeCategory === 'gallery' ? 'var(--color-primary)' : 'var(--color-gray-100)',
+                color: activeCategory === 'gallery' ? 'var(--color-white)' : 'var(--color-gray-700)',
+                padding: '0.5rem 1.25rem',
+                fontSize: 'var(--text-sm)',
+                borderRadius: '999px',
+                border: 'none',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                fontWeight: 600,
+                transition: 'all 0.2s ease'
+              }}
+             >
+               Photo Gallery
+             </button>
+          )}
+        </div>
+      </header>
+
+      {/* Menu Content */}
+      <main style={{ padding: '1rem', paddingBottom: '6rem' }}>
+        {menu.categories.map((cat: any) => (
+          <div key={cat.id} id={`cat-${cat.id}`} style={{ marginBottom: '2.5rem', scrollMarginTop: '140px' }}>
+            <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '1.25rem', color: 'var(--color-gray-800)', borderBottom: '2px solid var(--color-primary-100)', paddingBottom: '0.5rem', display: 'inline-block' }}>{cat.name}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {cat.items.filter((i: any) => i.is_available).map((item: any) => (
+                <div key={item.id} className="card hover-effect" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', borderRadius: 'var(--radius-lg)' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <span className={`food-type-indicator ${item.food_type}`}></span>
+                      <strong style={{ fontSize: 'var(--text-lg)', color: 'var(--color-gray-900)' }}>{item.name}</strong>
+                    </div>
+                    {item.description && <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem', marginBottom: '0.75rem', lineHeight: '1.4' }}>{item.description}</p>}
+                    <div style={{ fontWeight: 700, color: 'var(--color-primary)', fontSize: '1.1rem' }}>₹{item.price}</div>
+                  </div>
+                </div>
+              ))}
+              {cat.items.filter((i: any) => i.is_available).length === 0 && <p style={{ fontStyle: 'italic', color: 'var(--color-gray-400)' }}>No items available today.</p>}
+            </div>
+          </div>
+        ))}
+
+        {/* Gallery Section */}
+        {gallery.length > 0 && (
+          <div id="gallery-section" style={{ marginBottom: '2.5rem', scrollMarginTop: '140px' }}>
+            <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '1.25rem', color: 'var(--color-gray-800)', borderBottom: '2px solid var(--color-primary-100)', paddingBottom: '0.5rem', display: 'inline-block' }}>Photo Gallery</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.75rem' }}>
+              {gallery.map(img => (
+                <div key={img.id} style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', aspectRatio: '1', boxShadow: 'var(--shadow-sm)' }}>
+                  <img src={img.thumbnail_url || img.url} alt={img.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Action Linkage Area */}
+        {restaurant?.google_maps_url && (
+          <div style={{ marginTop: '3rem', padding: '2rem 1rem', background: 'var(--color-white)', borderRadius: 'var(--radius-xl)', textAlign: 'center', boxShadow: 'var(--shadow-md)' }}>
+            <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: '0.5rem' }}>Love our food?</h3>
+            <p style={{ color: 'var(--color-gray-500)', marginBottom: '1.5rem', fontSize: 'var(--text-sm)' }}>Help us grow by leaving a review on Google Maps.</p>
+            <a 
+              href={restaurant.google_maps_url} 
+              target="_blank" 
+              rel="noreferrer"
+              style={{
+                display: 'inline-block',
+                background: 'var(--color-primary)',
+                color: 'white',
+                padding: '0.75rem 2rem',
+                borderRadius: '999px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.39)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              ⭐️ Leave a Review
+            </a>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

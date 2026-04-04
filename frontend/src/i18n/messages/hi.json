@@ -1,0 +1,141 @@
+{
+  "common": {
+    "appName": "theOGMenu",
+    "tagline": "भारतीय रेस्टोरेंट के लिए डिजिटल QR मेनू",
+    "loading": "लोड हो रहा है...",
+    "save": "सेव करें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "add": "जोड़ें",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "back": "वापस",
+    "next": "अगला",
+    "done": "हो गया",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "close": "बंद करें",
+    "viewAll": "सभी देखें",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "error": "कुछ गलत हो गया",
+    "retry": "पुनः प्रयास करें"
+  },
+  "auth": {
+    "title": "theOGMenu में आपका स्वागत है",
+    "subtitle": "अपने रेस्टोरेंट के लिए सुंदर डिजिटल मेनू बनाएं",
+    "phoneLabel": "फ़ोन नंबर",
+    "phonePlaceholder": "+91 98765 43210",
+    "sendOTP": "OTP भेजें",
+    "otpLabel": "OTP दर्ज करें",
+    "otpPlaceholder": "6 अंकों का कोड दर्ज करें",
+    "verifyOTP": "OTP सत्यापित करें",
+    "resendOTP": "OTP पुनः भेजें",
+    "nameLabel": "आपका नाम",
+    "namePlaceholder": "अपना नाम दर्ज करें",
+    "setupProfile": "प्रोफ़ाइल सेट करें",
+    "loginSuccess": "सफलतापूर्वक लॉगिन!",
+    "invalidOTP": "अमान्य OTP। कृपया पुनः प्रयास करें।",
+    "otpSent": "आपके फ़ोन पर OTP भेजा गया"
+  },
+  "landing": {
+    "hero": {
+      "title": "आपका रेस्टोरेंट मेनू,",
+      "titleHighlight": "डिजिटल रूप से स्वादिष्ट",
+      "subtitle": "शानदार QR-कोड मेनू बनाएं जो आपके ग्राहकों को पसंद आएगा। भारतीय रेस्टोरेंट के लिए मुफ़्त।",
+      "cta": "मुफ़्त में शुरू करें",
+      "secondaryCta": "डेमो मेनू देखें"
+    },
+    "features": {
+      "title": "सब कुछ जो आपको चाहिए",
+      "qr": {
+        "title": "QR कोड मेनू",
+        "description": "ब्रांडेड QR कोड बनाएं जो तुरंत सुंदर डिजिटल मेनू खोलें"
+      },
+      "multilingual": {
+        "title": "बहु-भाषा",
+        "description": "अंग्रेजी, हिंदी और अन्य क्षेत्रीय भाषाओं में ग्राहकों की सेवा करें"
+      },
+      "gallery": {
+        "title": "फ़ोटो गैलरी",
+        "description": "अपने रेस्टोरेंट का माहौल और विशेष व्यंजन दिखाएं"
+      },
+      "reviews": {
+        "title": "ग्राहक समीक्षाएं",
+        "description": "अपने मेनू पर ग्राहक अनुभव एकत्रित और प्रदर्शित करें"
+      },
+      "google": {
+        "title": "Google एकीकरण",
+        "description": "आसान समीक्षाओं और दिशाओं के लिए अपना Google बिज़नेस पेज लिंक करें"
+      },
+      "realtime": {
+        "title": "रियल-टाइम अपडेट",
+        "description": "कीमतें, उपलब्धता और स्पेशल तुरंत अपडेट करें"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "डैशबोर्ड",
+    "welcome": "वापसी पर स्वागत है",
+    "nav": {
+      "overview": "अवलोकन",
+      "menuEditor": "मेनू एडिटर",
+      "gallery": "गैलरी",
+      "qrCodes": "QR कोड",
+      "reviews": "समीक्षाएं",
+      "settings": "सेटिंग्स"
+    },
+    "stats": {
+      "totalScans": "कुल स्कैन",
+      "menuItems": "मेनू आइटम",
+      "reviews": "समीक्षाएं",
+      "galleryPhotos": "गैलरी फ़ोटो"
+    },
+    "quickActions": {
+      "title": "त्वरित कार्य",
+      "addItem": "मेनू आइटम जोड़ें",
+      "generateQR": "QR कोड बनाएं",
+      "uploadPhoto": "फ़ोटो अपलोड करें",
+      "viewMenu": "लाइव मेनू देखें"
+    }
+  },
+  "menu": {
+    "searchPlaceholder": "व्यंजन खोजें...",
+    "filterAll": "सभी",
+    "filterVeg": "शाकाहारी",
+    "filterNonVeg": "मांसाहारी",
+    "filterVegan": "वीगन",
+    "bestseller": "बेस्टसेलर",
+    "new": "नया",
+    "spicy": "तीखा",
+    "unavailable": "वर्तमान में अनुपलब्ध",
+    "variants": "वेरिएंट",
+    "addons": "ऐड-ऑन",
+    "orderViaWhatsapp": "WhatsApp से ऑर्डर करें",
+    "viewGallery": "गैलरी देखें",
+    "viewReviews": "ग्राहक अनुभव",
+    "operatingHours": "संचालन समय",
+    "getDirections": "रास्ता पाएं",
+    "callRestaurant": "रेस्टोरेंट को कॉल करें",
+    "shareMenu": "मेनू शेयर करें"
+  },
+  "reviews": {
+    "title": "ग्राहक अनुभव",
+    "writeReview": "समीक्षा लिखें",
+    "yourName": "आपका नाम",
+    "yourRating": "आपकी रेटिंग",
+    "yourComment": "अपना अनुभव बताएं",
+    "submitReview": "समीक्षा सबमिट करें",
+    "thankYou": "आपकी समीक्षा के लिए धन्यवाद!",
+    "pending": "आपकी समीक्षा अनुमोदन के लिए लंबित है"
+  },
+  "gallery": {
+    "title": "फ़ोटो गैलरी",
+    "categories": {
+      "all": "सभी",
+      "food": "खाना",
+      "ambience": "माहौल",
+      "events": "कार्यक्रम"
+    }
+  }
+}
