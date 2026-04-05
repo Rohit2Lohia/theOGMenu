@@ -5,14 +5,15 @@ import React from 'react';
 interface MenuHeroProps {
   restaurantName: string;
   logoUrl?: string;
+  coverUrl?: string;
   tagline?: string;
   images?: string[];
 }
 
-const MenuHero: React.FC<MenuHeroProps> = ({ restaurantName, logoUrl, tagline, images }) => {
-  const bgImage = images && images.length > 0 
+const MenuHero: React.FC<MenuHeroProps> = ({ restaurantName, logoUrl, tagline, images, coverUrl }) => {
+  const bgImage = coverUrl || (images && images.length > 0 
     ? images[0] 
-    : 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=2000'; // Classy dark cocktails/restaurant vibe
+    : 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=2000'); // Classy dark cocktails/restaurant vibe
 
   return (
     <section style={{

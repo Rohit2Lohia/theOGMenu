@@ -72,8 +72,15 @@ export default function GalleryPage() {
   
   async function handleDelete(img: any) {
     const isLogo = restaurant?.logo_url === img.url;
+    const isCover = restaurant?.cover_url === img.url;
+    
     if (isLogo) {
       showNotification("Cannot delete the active restaurant logo. Change your logo first.", 'error');
+      return;
+    }
+
+    if (isCover) {
+      showNotification("Cannot delete the active restaurant cover. Change your cover first.", 'error');
       return;
     }
     
@@ -120,6 +127,34 @@ export default function GalleryPage() {
       showNotification('Logo removed. Reverting to initials.', 'info');
     } catch (err: any) {
       showNotification('Failed to remove logo: ' + err.message, 'error');
+    }
+  }
+
+  async function handleSetAsCover(imageUrl: string) {
+    if (!restaurant) return;
+    const token = getAccessToken();
+    if (!token) return;
+
+    try {
+      const updated = await api.updateRestaurant(token, restaurant.id, { cover_url: imageUrl });
+      setRestaurant(updated);
+      showNotification('Cover image updated successfully!', 'success');
+    } catch (err: any) {
+      showNotification('Failed to set cover: ' + err.message, 'error');
+    }
+  }
+
+  async function handleRemoveCover() {
+    if (!restaurant) return;
+    const token = getAccessToken();
+    if (!token) return;
+
+    try {
+      const updated = await api.updateRestaurant(token, restaurant.id, { cover_url: null });
+      setRestaurant(updated);
+      showNotification('Cover removed. Reverting to default hero.', 'info');
+    } catch (err: any) {
+      showNotification('Failed to remove cover: ' + err.message, 'error');
     }
   }
 
@@ -185,6 +220,7 @@ export default function GalleryPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
         {images.map(img => {
           const isLogo = restaurant?.logo_url === img.url;
+          const isCover = restaurant?.cover_url === img.url;
           return (
             <div key={img.id} className="card" style={{ 
               position: 'relative', 
@@ -199,12 +235,18 @@ export default function GalleryPage() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
               />
               
-              {/* Logo Badge */}
+            {/* Badges */}
+            <div style={{
+              position: 'absolute',
+              top: '0.5rem',
+              left: '0.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.4rem',
+              zIndex: 5
+            }}>
               {isLogo && (
                 <div style={{
-                  position: 'absolute',
-                  top: '0.5rem',
-                  left: '0.5rem',
                   background: 'var(--color-primary)',
                   color: 'white',
                   padding: '0.25rem 0.75rem',
@@ -213,11 +255,25 @@ export default function GalleryPage() {
                   fontWeight: 800,
                   textTransform: 'uppercase',
                   boxShadow: 'var(--shadow-sm)',
-                  zIndex: 5
                 }}>
                   Logo
                 </div>
               )}
+              {isCover && (
+                <div style={{
+                  background: 'var(--color-secondary)',
+                  color: 'white',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  boxShadow: 'var(--shadow-sm)',
+                }}>
+                  Cover
+                </div>
+              )}
+            </div>
 
               {/* Actions Overlay */}
               <div style={{
@@ -233,40 +289,60 @@ export default function GalleryPage() {
                 opacity: 1, // Visible on mobile, can be changed to hover on desktop if needed
                 transition: 'opacity 0.2s'
               }}>
-                <button 
-                  onClick={() => isLogo ? handleRemoveLogo() : handleSetAsLogo(img.url)}
-                  style={{
-                    background: isLogo ? 'var(--color-danger)' : 'white',
-                    color: isLogo ? 'white' : 'var(--color-gray-800)',
-                    border: 'none',
-                    padding: '0.4rem 0.8rem',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    boxShadow: 'var(--shadow-sm)',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  {isLogo ? 'Remove as Logo' : 'Set as Logo'}
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <button 
+                    onClick={() => isLogo ? handleRemoveLogo() : handleSetAsLogo(img.url)}
+                    style={{
+                      background: isLogo ? 'var(--color-danger)' : 'white',
+                      color: isLogo ? 'white' : 'var(--color-gray-800)',
+                      border: 'none',
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      boxShadow: 'var(--shadow-sm)',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {isLogo ? 'Remove as Logo' : 'Set as Logo'}
+                  </button>
+
+                  <button 
+                    onClick={() => isCover ? handleRemoveCover() : handleSetAsCover(img.url)}
+                    style={{
+                      background: isCover ? 'var(--color-danger)' : 'var(--color-secondary)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      boxShadow: 'var(--shadow-sm)',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {isCover ? 'Remove as Cover' : 'Set as Cover'}
+                  </button>
+                </div>
 
                 <button 
                   onClick={() => handleDelete(img)}
-                  disabled={isLogo}
-                  title={isLogo ? "Active logo cannot be deleted" : "Delete Image"}
+                  disabled={isLogo || isCover}
+                  title={isLogo || isCover ? "Active branding cannot be deleted" : "Delete Image"}
                   style={{
                     background: 'rgba(255,255,255,0.9)',
                     border: 'none',
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    cursor: isLogo ? 'not-allowed' : 'pointer',
+                    cursor: isLogo || isCover ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: isLogo ? 'var(--color-gray-300)' : 'var(--color-danger)',
-                    opacity: isLogo ? 0.5 : 1
+                    color: isLogo || isCover ? 'var(--color-gray-300)' : 'var(--color-danger)',
+                    opacity: isLogo || isCover ? 0.5 : 1
                   }}
                 >
                   🗑️

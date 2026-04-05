@@ -80,6 +80,7 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
       <MenuHero 
         restaurantName={restaurant?.name || menu.name}
         logoUrl={restaurant?.logo_url}
+        coverUrl={restaurant?.cover_url}
         tagline={restaurant?.description}
         images={gallery.map(img => img.url)}
       />
