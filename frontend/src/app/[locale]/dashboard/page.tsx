@@ -1,18 +1,61 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import { api } from '@/lib/api';
+import { getAccessToken } from '@/lib/auth';
 import styles from './page.module.css';
 
 export default function DashboardOverview() {
   const t = useTranslations('dashboard');
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
+  
+  const [loading, setLoading] = useState(true);
+  const [restaurantSlug, setRestaurantSlug] = useState<string | null>(null);
+  const [statsData, setStatsData] = useState({
+    totalScans: 0,
+    menuItems: 0,
+    menus: 0,
+    galleryPhotos: 0,
+  });
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  async function fetchStats() {
+    const token = getAccessToken();
+    if (!token) return;
+
+    try {
+      setLoading(true);
+      const rests = await api.getMyRestaurants(token);
+      if (rests && rests.length > 0) {
+        const activeRest = rests[0];
+        setRestaurantSlug(activeRest.slug);
+        const stats = await api.getRestaurantStats(token, activeRest.id);
+        setStatsData({
+          totalScans: stats.total_scans,
+          menuItems: stats.total_items,
+          menus: stats.total_menus,
+          galleryPhotos: stats.total_gallery_photos,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const stats = [
-    { key: 'totalScans', value: '0', icon: '📊', color: '#FF6B35' },
-    { key: 'menuItems', value: '0', icon: '🍽️', color: '#22C55E' },
-    { key: 'reviews', value: '0', icon: '⭐', color: '#F59E0B' },
-    { key: 'galleryPhotos', value: '0', icon: '📸', color: '#3B82F6' },
+    { key: 'totalScans', value: statsData.totalScans.toString(), icon: '📊', color: '#FF6B35' },
+    { key: 'menuItems', value: statsData.menuItems.toString(), icon: '🍽️', color: '#22C55E' },
+    { key: 'menus', value: statsData.menus.toString(), icon: '📜', color: '#F59E0B' },
+    { key: 'galleryPhotos', value: statsData.galleryPhotos.toString(), icon: '📸', color: '#3B82F6' },
   ];
 
   const quickActions = [
@@ -37,10 +80,21 @@ export default function DashboardOverview() {
     {
       key: 'viewMenu',
       icon: '👁️',
-      path: '/menu/demo',
+      path: restaurantSlug ? `/r/${restaurantSlug}` : '#',
       gradient: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
+      external: true
     },
   ];
+
+  const handleAction = (action: any) => {
+    if (action.key === 'viewMenu') {
+      if (restaurantSlug) {
+        window.open(`/${locale}/r/${restaurantSlug}`, '_blank');
+      }
+      return;
+    }
+    router.push(action.path);
+  };
 
   return (
     <div className={styles.overview}>
@@ -62,7 +116,9 @@ export default function DashboardOverview() {
               {stat.icon}
             </div>
             <div className={styles.statInfo}>
-              <span className={styles.statValue}>{stat.value}</span>
+              <span className={styles.statValue}>
+                {loading ? '...' : stat.value}
+              </span>
               <span className={styles.statLabel}>{t(`stats.${stat.key}`)}</span>
             </div>
           </div>
@@ -77,7 +133,7 @@ export default function DashboardOverview() {
             <button
               key={action.key}
               className={styles.actionCard}
-              onClick={() => router.push(action.path)}
+              onClick={() => handleAction(action)}
               style={{ background: action.gradient }}
             >
               <span className={styles.actionIcon}>{action.icon}</span>

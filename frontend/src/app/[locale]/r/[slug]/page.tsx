@@ -22,28 +22,18 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
   useEffect(() => {
     async function loadPublicData() {
       try {
-        // 1. Fetch Menu by Restaurant Slug (Stable URL)
-        const menuRes = await fetch(`${API_BASE}/public/restaurant/${params.slug}/menu`);
-        if (!menuRes.ok) throw new Error('Menu fetch failed');
-        const menuData = await menuRes.json();
-        setMenu(menuData);
+        // Use the consolidated endpoint to fetch everything in one go
+        const res = await fetch(`${API_BASE}/public/restaurant/${params.slug}/full`);
+        if (!res.ok) throw new Error('Failed to load menu data');
         
-        if (menuData.categories?.length > 0) {
-          setActiveCategory(menuData.categories[0].id);
-        }
-
-        // 2. Fetch Restaurant Data for Maps link and Info
-        if (menuData.restaurant_id) {
-          const restRes = await fetch(`${API_BASE}/restaurants/public/id/${menuData.restaurant_id}`);
-          if (restRes.ok) {
-            setRestaurant(await restRes.json());
-          }
-
-          // 3. Fetch Gallery
-          const galRes = await fetch(`${API_BASE}/restaurants/${menuData.restaurant_id}/gallery`);
-          if (galRes.ok) {
-            setGallery(await galRes.json());
-          }
+        const data = await res.json();
+        
+        setMenu(data);
+        setRestaurant(data.restaurant);
+        setGallery(data.gallery);
+        
+        if (data.categories?.length > 0) {
+          setActiveCategory(data.categories[0].id);
         }
       } catch (err) {
         console.error('Error loading stable menu:', err);

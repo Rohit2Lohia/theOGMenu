@@ -219,6 +219,9 @@ export const api = {
       token,
       body: JSON.stringify(data),
     }),
+
+  getRestaurantStats: (token: string, restaurantId: string) =>
+    apiRequest<any>(`/restaurants/${restaurantId}/stats`, { token }),
 };
 
 export { ApiError };

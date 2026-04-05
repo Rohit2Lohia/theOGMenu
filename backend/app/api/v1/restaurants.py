@@ -8,8 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.schemas.restaurant import RestaurantCreate, RestaurantUpdate, RestaurantResponse
+from app.schemas.restaurant import RestaurantCreate, RestaurantUpdate, RestaurantResponse, RestaurantStatsResponse
 from app.services import restaurant_service
+from uuid import UUID
 
 router = APIRouter(prefix="/restaurants", tags=["Restaurants"])
 
@@ -90,3 +91,18 @@ async def get_restaurant_public_by_id(
     if not restaurant or not restaurant.is_active:
         raise HTTPException(status_code=404, detail="Restaurant not found")
     return restaurant
+
+@router.get("/{restaurant_id}/stats", response_model=RestaurantStatsResponse)
+async def get_restaurant_stats(
+    restaurant_id: UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get aggregated statistics for a restaurant."""
+    restaurant = await restaurant_service.get_restaurant_by_id(db, restaurant_id)
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    if restaurant.owner_id != user.id:
+        raise HTTPException(status_code=403, detail="Not your restaurant")
+    
+    return await restaurant_service.get_restaurant_stats(db, restaurant_id)

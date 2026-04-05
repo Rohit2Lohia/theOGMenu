@@ -133,3 +133,10 @@ class ItemResponse(BaseModel):
     sort_order: int
 
     model_config = {"from_attributes": True}
+
+class PublicMenuDataResponse(BaseModel):
+    id: UUID
+    name: str
+    restaurant: dict
+    categories: list[dict]
+    gallery: list[dict]

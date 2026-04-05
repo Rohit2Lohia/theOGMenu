@@ -238,3 +238,82 @@ async def get_full_menu(db: AsyncSession, menu_id: UUID) -> Optional[Menu]:
     )
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
+
+async def get_full_public_data(db: AsyncSession, slug: str) -> Optional[dict]:
+    """
+    Get a complete snapshot of a restaurant's public menu, 
+    including restaurant info and gallery, for a single fast load.
+    """
+    from app.services import restaurant_service
+    from app.models.category import Category # already imported at top
+    from app.models.gallery import GalleryImage
+
+    restaurant = await restaurant_service.get_restaurant_by_slug(db, slug)
+    if not restaurant:
+        return None
+    
+    # 1. Get Active Menu with categories & items
+    active_menu = await get_active_menu_for_restaurant(db, restaurant.id)
+    if not active_menu:
+        return None
+    
+    full_menu = await get_full_menu(db, active_menu.id)
+    
+    # 2. Get Gallery
+    stmt_gallery = select(GalleryImage).where(GalleryImage.restaurant_id == restaurant.id)
+    gallery_result = await db.execute(stmt_gallery)
+    gallery = list(gallery_result.scalars().all())
+
+    return {
+        "id": active_menu.id,
+        "name": active_menu.name,
+        "restaurant": {
+            "id": restaurant.id,
+            "name": restaurant.name,
+            "logo_url": restaurant.logo_url,
+            "cover_url": restaurant.cover_url,
+            "description": restaurant.description,
+            "address": restaurant.address,
+            "google_maps_url": restaurant.google_maps_url,
+            "phone_number": restaurant.phone_number,
+            "opening_hours": restaurant.opening_hours,
+            "whatsapp_number": restaurant.whatsapp_number,
+            "instagram_url": restaurant.instagram_url,
+            "facebook_url": restaurant.facebook_url,
+            "brand_accent_color": restaurant.brand_accent_color,
+            "our_story": restaurant.our_story
+        } if restaurant else None,
+        "categories": [
+            {
+                "id": cat.id,
+                "name": cat.name,
+                "icon": cat.icon,
+                "items": [
+                    {
+                        "id": item.id,
+                        "name": item.name,
+                        "description": item.description,
+                        "price": item.price,
+                        "food_type": item.food_type,
+                        "is_available": item.is_available,
+                        "is_bestseller": item.is_bestseller,
+                        "is_spicy": item.is_spicy,
+                        "calories": item.calories,
+                        "tags": item.tags,
+                        "image_url": item.image_url
+                    }
+                    for item in cat.items if item.is_available
+                ]
+            }
+            for cat in full_menu.categories if cat.is_active
+        ] if full_menu else [],
+        "gallery": [
+            {
+                "id": img.id,
+                "url": img.url,
+                "caption": img.caption,
+                "category": img.category
+            }
+            for img in gallery
+        ]
+    }

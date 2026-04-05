@@ -4,7 +4,8 @@ Menu, Category, and Item API routes.
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -262,14 +263,18 @@ async def get_public_menu(
 )
 async def get_stable_public_menu(
     slug: str,
+    qr_id: Optional[UUID] = Query(None),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Stable public endpoint that resolves the current 'active' menu for a restaurant
     by its slug. Used for permanent QR codes.
     """
-    from app.services import restaurant_service
+    from app.services import restaurant_service, qr_service
     
+    if qr_id:
+        await qr_service.increment_scan_count(db, qr_id)
+
     restaurant = await restaurant_service.get_restaurant_by_slug(db, slug)
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
@@ -313,3 +318,27 @@ async def get_stable_public_menu(
             if cat.is_active and any(item.is_available for item in cat.items)
         ]
     }
+
+@router.get(
+    "/public/restaurant/{slug}/full",
+    response_model=dict,
+    tags=["Public"],
+)
+async def get_full_public_data(
+    slug: str,
+    qr_id: Optional[UUID] = Query(None),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Consolidated public endpoint for faster menu loading. 
+    Returns restaurant, menu, and gallery in one call.
+    """
+    from app.services import qr_service
+    if qr_id:
+        await qr_service.increment_scan_count(db, qr_id)
+
+    data = await menu_service.get_full_public_data(db, slug)
+    if not data:
+        raise HTTPException(status_code=404, detail="Restaurant or menu not found")
+    
+    return data

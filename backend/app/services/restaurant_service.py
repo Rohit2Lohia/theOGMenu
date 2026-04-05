@@ -11,7 +11,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.restaurant import Restaurant
 from app.models.menu import Menu
-from app.schemas.restaurant import RestaurantCreate, RestaurantUpdate
+from app.models.category import Category
+from app.models.item import Item
+from app.models.qr_code import QRCode
+from app.models.gallery import GalleryImage
+from sqlalchemy import func
+from app.schemas.restaurant import RestaurantCreate, RestaurantUpdate, RestaurantStatsResponse
 
 
 def generate_slug(name: str) -> str:
@@ -100,3 +105,38 @@ async def update_restaurant(
 
     await db.flush()
     return restaurant
+
+async def get_restaurant_stats(
+    db: AsyncSession, restaurant_id: UUID
+) -> RestaurantStatsResponse:
+    """Get aggregated statistics for a restaurant."""
+    
+    # Total Scans
+    stmt_scans = select(func.coalesce(func.sum(QRCode.scan_count), 0)).where(QRCode.restaurant_id == restaurant_id)
+    total_scans = (await db.execute(stmt_scans)).scalar() or 0
+
+    # Total Menus
+    stmt_menus = select(func.count(Menu.id)).where(Menu.restaurant_id == restaurant_id)
+    total_menus = (await db.execute(stmt_menus)).scalar() or 0
+
+    # Total Items
+    stmt_items = (
+        select(func.count(Item.id))
+        .select_from(Item)
+        .join(Category, Item.category_id == Category.id)
+        .join(Menu, Category.menu_id == Menu.id)
+        .where(Menu.restaurant_id == restaurant_id)
+    )
+    total_items = (await db.execute(stmt_items)).scalar() or 0
+
+    # Total Gallery Photos
+    stmt_photos = select(func.count(GalleryImage.id)).where(GalleryImage.restaurant_id == restaurant_id)
+    total_photos = (await db.execute(stmt_photos)).scalar() or 0
+
+    return RestaurantStatsResponse(
+        total_scans=total_scans,
+        total_menus=total_menus,
+        total_items=total_items,
+        total_gallery_photos=total_photos
+    )
+

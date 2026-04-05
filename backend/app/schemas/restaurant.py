@@ -65,3 +65,9 @@ class RestaurantResponse(BaseModel):
     brand_accent_color: Optional[str] = None
 
     model_config = {"from_attributes": True}
+
+class RestaurantStatsResponse(BaseModel):
+    total_scans: int = 0
+    total_menus: int = 0
+    total_items: int = 0
+    total_gallery_photos: int = 0

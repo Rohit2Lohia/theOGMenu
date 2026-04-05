@@ -55,3 +55,26 @@ async def extract_place_info_from_url(google_maps_url: str) -> Optional[dict]:
     except Exception as e:
         print(f"Error extracting place info: {e}")
         return None
+        # 5. Final fallback for name if still generic
+        if "name" not in result or result["name"].lower() in ["google maps", "google"]:
+            # Try to grab it from the <title> tag
+            title_match = re.search(r'<title>(.*?)</title>', html_content)
+            if title_match:
+                title_val = unquote_plus(title_match.group(1))
+                title_val = re.sub(r' - Google Maps.*$', '', title_val).strip()
+                if title_val.lower() not in ["google maps", "google"]:
+                    result["name"] = title_val
+
+        # 6. Heuristic for Indian addresses in HTML (Searching for 6-digit PIN codes)
+        if "address" not in result:
+            # Look for common Indian address pattern ending in 6 digit PIN
+            # e.g. "..., Arunachal Pradesh 791110"
+            pin_match = re.search(r'([A-Z][a-z]+[A-Za-z0-9\s,.-]{10,}\s\d{6})', html_content)
+            if pin_match:
+                result["address"] = pin_match.group(1).strip()
+
+        return result
+
+    except Exception as e:
+        print(f"Error extracting place info: {e}")
+        return None
