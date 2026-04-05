@@ -61,23 +61,48 @@ const MenuHero: React.FC<MenuHeroProps> = ({ restaurantName, logoUrl, tagline, i
         zIndex: 2
       }} />
 
-      {/* Content */}
-      <div className="container" style={{ position: 'relative', zIndex: 3, padding: '2rem' }}>
-        {logoUrl && (
+      {/* Logo Overlay */}
+      <div style={{ position: 'relative', zIndex: 10, marginBottom: '1.5rem' }}>
+        {logoUrl ? (
           <img 
             src={logoUrl} 
-            alt={restaurantName} 
+            alt="Logo" 
             style={{ 
-              width: '80px', 
-              height: '80px', 
+              width: '100px', 
+              height: '100px', 
               borderRadius: '50%', 
-              margin: '0 auto 1.5rem',
-              border: '2px solid white',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              border: '4px solid white',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
               objectFit: 'cover'
             }} 
           />
+        ) : (
+          <div style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--color-accent), var(--color-secondary))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '3px solid white',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+            fontSize: '1.8rem',
+            fontWeight: 800,
+            color: 'white',
+            letterSpacing: '0.05em'
+          }}>
+            {restaurantName
+              .split(' ')
+              .map(word => word[0])
+              .join('')
+              .toUpperCase()
+              .substring(0, 2)}
+          </div>
         )}
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 10, padding: '0 1rem' }}>
         <h1 style={{ 
           fontFamily: 'var(--font-serif)', 
           fontSize: 'var(--text-5xl)', 

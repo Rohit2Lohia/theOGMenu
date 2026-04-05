@@ -73,7 +73,11 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-white)' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'var(--color-white)',
+      '--color-accent': restaurant?.brand_accent_color || '#C5A059'
+    } as any}>
       {/* Hero Section */}
       <MenuHero 
         restaurantName={restaurant?.name || menu.name}
@@ -321,31 +325,151 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
           </div>
         )}
 
-        {/* Action Linkage Area */}
-        {restaurant?.google_maps_url && (
-          <div style={{ marginTop: '3rem', padding: '2rem 1rem', background: 'var(--color-white)', borderRadius: 'var(--radius-xl)', textAlign: 'center', boxShadow: 'var(--shadow-md)' }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: '0.5rem' }}>Love our food?</h3>
-            <p style={{ color: 'var(--color-gray-500)', marginBottom: '1.5rem', fontSize: 'var(--text-sm)' }}>Help us grow by leaving a review on Google Maps.</p>
-            <a 
-              href={restaurant.google_maps_url} 
-              target="_blank" 
-              rel="noreferrer"
-              style={{
-                display: 'inline-block',
-                background: 'var(--color-primary)',
-                color: 'white',
-                padding: '0.75rem 2rem',
-                borderRadius: '999px',
-                fontWeight: 600,
-                textDecoration: 'none',
-                boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.39)',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              ⭐️ Leave a Review
-            </a>
-          </div>
+        {/* New "Our Story" Section */}
+        {restaurant?.our_story && (
+          <section style={{ 
+            marginTop: '4rem', 
+            padding: '4rem 1.5rem', 
+            background: '#FDFCFB', // Warm paper feel
+            borderRadius: '2rem',
+            textAlign: 'center',
+            border: '1px solid #F1E9DB',
+            boxShadow: 'inset 0 0 80px rgba(197,160,89,0.03)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Decorative Quotes */}
+            <div style={{ 
+              fontSize: '8rem', 
+              fontFamily: 'var(--font-serif)', 
+              color: 'var(--color-accent)', 
+              opacity: 0.1, 
+              position: 'absolute', 
+              top: '-3rem', 
+              left: '50%', 
+              transform: 'translateX(-50%)',
+              zIndex: 0,
+              userSelect: 'none'
+            }}>“</div>
+            
+            <h2 style={{ 
+              fontFamily: 'var(--font-serif)',
+              fontSize: '2.5rem', 
+              marginBottom: '2.5rem', 
+              position: 'relative', 
+              zIndex: 1, 
+              color: 'var(--color-secondary)'
+            }}>
+              Our Story
+            </h2>
+            
+            <p style={{ 
+              fontFamily: 'var(--font-serif)', 
+              lineHeight: '2.1', 
+              color: 'var(--color-gray-800)',
+              fontSize: '1.25rem',
+              whiteSpace: 'pre-wrap',
+              fontStyle: 'italic',
+              position: 'relative',
+              zIndex: 1,
+              maxWidth: '800px',
+              margin: '0 auto'
+            }}>
+              {restaurant.our_story}
+            </p>
+            
+            <div style={{ 
+              width: '60px', 
+              height: '2px', 
+              background: 'var(--color-accent)', 
+              margin: '2.5rem auto 0',
+              opacity: 0.4
+            }}></div>
+          </section>
         )}
+
+        {/* Improved Action & Contact Area */}
+        <section style={{ 
+          marginTop: '4rem', 
+          padding: '3rem 1.5rem', 
+          background: 'var(--color-white)', 
+          borderRadius: 'var(--radius-xl)', 
+          textAlign: 'center', 
+          boxShadow: 'var(--shadow-md)',
+          borderBottom: '4px solid var(--color-accent)'
+        }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', fontFamily: 'var(--font-display)' }}>Connect with Us</h3>
+          
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '2.5rem' }}>
+            {restaurant?.whatsapp_number && (
+              <a href={`https://wa.me/${restaurant.whatsapp_number}`} target="_blank" rel="noreferrer" 
+                 style={{ width: '44px', height: '44px', background: '#25D366', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '1.1rem', textDecoration: 'none' }} title="WhatsApp">
+                💬
+              </a>
+            )}
+            {restaurant?.instagram_url && (
+              <a href={`https://instagram.com/${restaurant.instagram_url}`} target="_blank" rel="noreferrer" 
+                 style={{ width: '44px', height: '44px', background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '1.1rem', textDecoration: 'none' }} title="Instagram">
+                📸
+              </a>
+            )}
+            {restaurant?.facebook_url && (
+              <a href={restaurant.facebook_url} target="_blank" rel="noreferrer" 
+                 style={{ width: '44px', height: '44px', background: '#1877F2', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '1.1rem', textDecoration: 'none' }} title="Facebook">
+                📘
+              </a>
+            )}
+          </div>
+
+          {(restaurant?.phone_number || restaurant?.address) && (
+            <div style={{ marginBottom: '2.5rem', color: 'var(--color-gray-600)', fontSize: '0.95rem' }}>
+              {restaurant.address && <p style={{ marginBottom: '0.5rem' }}>📍 {restaurant.address}</p>}
+              {restaurant.phone_number && <p>📞 {restaurant.phone_number}</p>}
+              {restaurant.opening_hours && <p style={{ marginTop: '0.5rem', fontWeight: 600, color: 'var(--color-accent)' }}>🕒 {restaurant.opening_hours}</p>}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {restaurant?.google_maps_url && (
+              <a 
+                href={restaurant.google_maps_url} 
+                target="_blank" 
+                rel="noreferrer"
+                style={{
+                  display: 'inline-block',
+                  background: 'var(--color-accent)',
+                  color: 'white',
+                  padding: '0.75rem 2rem',
+                  borderRadius: '999px',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.39)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                🗺️ Get Directions
+              </a>
+            )}
+            {restaurant?.phone_number && (
+              <a 
+                href={`tel:${restaurant.phone_number}`}
+                style={{
+                  display: 'inline-block',
+                  background: 'white',
+                  color: 'var(--color-gray-800)',
+                  border: '2px solid var(--color-gray-200)',
+                  padding: '0.75rem 2rem',
+                  borderRadius: '999px',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                📞 Call Now
+              </a>
+            )}
+          </div>
+        </section>
       </main>
     </div>
   );

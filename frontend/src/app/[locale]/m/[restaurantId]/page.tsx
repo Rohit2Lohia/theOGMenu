@@ -71,7 +71,11 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-white)' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'var(--color-white)',
+      '--color-accent': restaurant?.brand_accent_color || '#C5A059'
+    } as any}>
       {/* Hero Section */}
       <MenuHero 
         restaurantName={restaurant?.name || menu.name}
@@ -133,14 +137,14 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
                   fontSize: 'var(--text-sm)',
                   borderRadius: 0,
                   border: 'none',
-                  borderBottom: activeCategory === cat.id ? '2px solid var(--color-accent)' : '2px solid transparent',
+                  borderBottom: activeCategory === cat.id ? '3.5px solid var(--color-accent)' : '3.5px solid transparent',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
-                  fontWeight: 600,
+                  fontWeight: 800,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  padding: '0.5rem 0',
-                  transition: 'all 0.2s ease',
+                  letterSpacing: '0.08em',
+                  padding: '0.75rem 0.25rem',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 }}
               >
                 {cat.name}
@@ -153,10 +157,10 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
             display: 'flex', 
             alignItems: 'center', 
             position: 'relative',
-            width: isSearchExpanded ? '100%' : '40px',
-            maxWidth: isSearchExpanded ? '280px' : '40px',
-            height: '40px',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            width: isSearchExpanded ? '100%' : '44px',
+            maxWidth: isSearchExpanded ? '280px' : '44px',
+            height: '44px',
+            transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
             marginLeft: 'auto'
           }}>
             <button
@@ -168,11 +172,11 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
                 background: 'none',
                 border: 'none',
                 color: isSearchExpanded ? 'var(--color-accent)' : '#94A3B8',
-                fontSize: '1.4rem',
+                fontSize: '1.2rem',
                 cursor: 'pointer',
                 zIndex: 10,
-                width: '40px',
-                height: '40px',
+                width: '44px',
+                height: '44px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -184,46 +188,46 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
             </button>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search dishes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchExpanded(true)}
               onBlur={() => { if (!searchQuery) setIsSearchExpanded(false); }}
               style={{
                 width: isSearchExpanded ? '100%' : '0',
-                padding: isSearchExpanded ? '0.5rem 2.5rem 0.5rem 2.5rem' : '0',
+                padding: isSearchExpanded ? '0.6rem 2.5rem 0.6rem 2.8rem' : '0',
                 opacity: isSearchExpanded ? 1 : 0,
                 borderRadius: 'var(--radius-full)',
-                border: isSearchExpanded ? '1px solid var(--color-gray-700)' : '1px solid transparent',
-                background: 'rgba(255, 255, 255, 0.08)',
+                border: isSearchExpanded ? '2px solid var(--color-accent)' : '2px solid transparent',
+                background: 'rgba(255, 255, 255, 0.12)',
                 color: 'white',
                 fontSize: 'var(--text-sm)',
+                fontWeight: 500,
                 outline: 'none',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                cursor: isSearchExpanded ? 'text' : 'pointer'
+                boxShadow: isSearchExpanded ? '0 0 15px rgba(197, 160, 89, 0.2)' : 'none',
+                transition: 'all 0.3s ease',
+                cursor: 'text'
               }}
-              autoFocus={isSearchExpanded}
             />
-            {isSearchExpanded && (
+            {isSearchExpanded && searchQuery && (
               <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setIsSearchExpanded(false);
-                }}
+                onClick={() => setSearchQuery('')}
                 style={{
                   position: 'absolute',
-                  right: '0.25rem',
+                  right: '0.4rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  background: 'none',
+                  background: 'rgba(255, 255, 255, 0.2)',
                   border: 'none',
-                  color: 'rgba(255, 255, 255, 0.4)',
-                  width: '32px',
-                  height: '32px',
+                  color: 'white',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  fontSize: '0.85rem',
+                  fontSize: '0.75rem',
                   zIndex: 11
                 }}
               >
@@ -307,42 +311,162 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
 
         {/* Gallery Section */}
         {gallery.length > 0 && (
-          <div id="gallery-section" style={{ marginBottom: '2.5rem', scrollMarginTop: '140px' }}>
-            <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '1.25rem', color: 'var(--color-gray-800)', borderBottom: '2px solid var(--color-primary-100)', paddingBottom: '0.5rem', display: 'inline-block' }}>Photo Gallery</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.75rem' }}>
-              {gallery.map(img => (
-                <div key={img.id} style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', aspectRatio: '1', boxShadow: 'var(--shadow-sm)' }}>
-                  <img src={img.thumbnail_url || img.url} alt={img.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div id="gallery-section" style={{ marginTop: '4rem', marginBottom: '4rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+              <h2 className="menu-category-title" style={{ fontSize: '1.75rem' }}>Photo Gallery</h2>
+              <div style={{ width: '30px', height: '2px', background: 'var(--color-accent)', margin: '0.5rem auto' }}></div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
+              {gallery.map((img: any) => (
+                <div key={img.id} style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', aspectRatio: '1', boxShadow: 'var(--shadow-sm)' }}>
+                  <img src={img.url} alt={img.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Action Linkage Area */}
-        {restaurant?.google_maps_url && (
-          <div style={{ marginTop: '3rem', padding: '2rem 1rem', background: 'var(--color-white)', borderRadius: 'var(--radius-xl)', textAlign: 'center', boxShadow: 'var(--shadow-md)' }}>
-            <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: '0.5rem' }}>Love our food?</h3>
-            <p style={{ color: 'var(--color-gray-500)', marginBottom: '1.5rem', fontSize: 'var(--text-sm)' }}>Help us grow by leaving a review on Google Maps.</p>
-            <a 
-              href={restaurant.google_maps_url} 
-              target="_blank" 
-              rel="noreferrer"
-              style={{
-                display: 'inline-block',
-                background: 'var(--color-primary)',
-                color: 'white',
-                padding: '0.75rem 2rem',
-                borderRadius: '999px',
-                fontWeight: 600,
-                textDecoration: 'none',
-                boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.39)',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              ⭐️ Leave a Review
-            </a>
-          </div>
+        {/* New "Our Story" & Info Section */}
+        {restaurant && (restaurant.our_story || restaurant.address || restaurant.phone_number || restaurant.instagram_url) && (
+          <section style={{ 
+            marginTop: '6rem', 
+            padding: '5rem 2rem', 
+            background: '#FDFCFB', // Very light warm paper/parchment feel
+            borderRadius: '3rem',
+            textAlign: 'center',
+            border: '1px solid #F1E9DB',
+            boxShadow: 'inset 0 0 100px rgba(197,160,89,0.03)'
+          }}>
+            {restaurant.our_story && (
+              <div style={{ marginBottom: '5rem', maxWidth: '800px', margin: '0 auto 5rem', position: 'relative' }}>
+                {/* Decorative Quotes */}
+                <div style={{ 
+                  fontSize: '8rem', 
+                  fontFamily: 'var(--font-serif)', 
+                  color: 'var(--color-accent)', 
+                  opacity: 0.1, 
+                  position: 'absolute', 
+                  top: '-3rem', 
+                  left: '50%', 
+                  transform: 'translateX(-50%)',
+                  zIndex: 0,
+                  userSelect: 'none'
+                }}>“</div>
+                
+                <h2 className="menu-category-title" style={{ 
+                  fontSize: '2.5rem', 
+                  marginBottom: '2.5rem', 
+                  position: 'relative', 
+                  zIndex: 1, 
+                  borderBottom: 'none',
+                  color: 'var(--color-secondary)'
+                }}>
+                  Our Story
+                </h2>
+                
+                <p style={{ 
+                  fontFamily: 'var(--font-serif)', 
+                  lineHeight: '2.1', 
+                  color: 'var(--color-gray-800)',
+                  fontSize: '1.35rem',
+                  whiteSpace: 'pre-wrap',
+                  fontStyle: 'italic',
+                  position: 'relative',
+                  zIndex: 1,
+                  padding: '0 1rem'
+                }}>
+                  {restaurant.our_story}
+                </p>
+                
+                <div style={{ 
+                  width: '80px', 
+                  height: '2px', 
+                  background: 'var(--color-accent)', 
+                  margin: '3rem auto 0',
+                  opacity: 0.4
+                }}></div>
+              </div>
+            )}
+
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              gap: '3rem',
+              borderTop: '1px solid #EEE',
+              paddingTop: '4rem'
+            }}>
+              {/* Social Links */}
+              <div style={{ display: 'flex', gap: '1.25rem' }}>
+                {restaurant.whatsapp_number && (
+                  <a href={`https://wa.me/${restaurant.whatsapp_number}`} target="_blank" rel="noopener noreferrer" 
+                     style={{ width: '50px', height: '50px', background: '#25D366', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', borderRadius: '50%', fontSize: '1.5rem' }} title="WhatsApp">
+                    💬
+                  </a>
+                )}
+                {restaurant.instagram_url && (
+                  <a href={`https://instagram.com/${restaurant.instagram_url}`} target="_blank" rel="noopener noreferrer" 
+                     style={{ width: '50px', height: '50px', background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', borderRadius: '50%', fontSize: '1.5rem' }} title="Instagram">
+                    📸
+                  </a>
+                )}
+                {restaurant.facebook_url && (
+                  <a href={restaurant.facebook_url} target="_blank" rel="noopener noreferrer" 
+                     style={{ width: '50px', height: '50px', background: '#1877F2', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', borderRadius: '50%', fontSize: '1.5rem' }} title="Facebook">
+                    📘
+                  </a>
+                )}
+              </div>
+
+              <div style={{ maxWidth: '450px' }}>
+                {restaurant.address && (
+                  <p style={{ color: '#64748B', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+                    📍 {restaurant.address}
+                  </p>
+                )}
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  {restaurant.phone_number && (
+                    <a href={`tel:${restaurant.phone_number}`} className="btn btn-outline" style={{ padding: '0.5rem 1.5rem' }}>
+                      📞 Call Us
+                    </a>
+                  )}
+                  {restaurant.google_maps_url && (
+                    <a 
+                      href={restaurant.google_maps_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      style={{ 
+                        padding: '0.6rem 1.5rem',
+                        background: 'var(--color-accent)',
+                        color: 'white',
+                        borderRadius: 'var(--radius-full)',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        boxShadow: 'var(--shadow-sm)'
+                      }}
+                    >
+                      🗺️ Get Directions
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {restaurant.opening_hours && (
+                <div style={{ 
+                  marginTop: '1rem', 
+                  padding: '1rem 2.5rem', 
+                  borderRadius: '1.5rem', 
+                  background: 'white', 
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
+                  border: '1px solid #F1F5F9'
+                }}>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-accent)', letterSpacing: '0.02em' }}>
+                    🕒 {restaurant.opening_hours}
+                  </span>
+                </div>
+              )}
+            </div>
+          </section>
         )}
       </main>
     </div>

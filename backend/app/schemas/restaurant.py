@@ -13,6 +13,15 @@ class RestaurantCreate(BaseModel):
     description: Optional[str] = None
     google_maps_url: Optional[str] = None
     address: Optional[str] = None
+    # Enhanced Profile Fields
+    our_story: Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[str] = None
+    instagram_url: Optional[str] = None
+    whatsapp_number: Optional[str] = None
+    facebook_url: Optional[str] = None
+    opening_hours: Optional[str] = None
+    brand_accent_color: Optional[str] = None
 
 
 class RestaurantUpdate(BaseModel):
@@ -23,6 +32,15 @@ class RestaurantUpdate(BaseModel):
     address: Optional[str] = None
     google_maps_url: Optional[str] = None
     is_active: Optional[bool] = None
+    # Enhanced Profile Fields
+    our_story: Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[str] = None
+    instagram_url: Optional[str] = None
+    whatsapp_number: Optional[str] = None
+    facebook_url: Optional[str] = None
+    opening_hours: Optional[str] = None
+    brand_accent_color: Optional[str] = None
 
 
 class RestaurantResponse(BaseModel):
@@ -36,5 +54,14 @@ class RestaurantResponse(BaseModel):
     address: Optional[str] = None
     google_maps_url: Optional[str] = None
     is_active: bool
+    # Enhanced Profile Fields
+    our_story: Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[str] = None
+    instagram_url: Optional[str] = None
+    whatsapp_number: Optional[str] = None
+    facebook_url: Optional[str] = None
+    opening_hours: Optional[str] = None
+    brand_accent_color: Optional[str] = None
 
     model_config = {"from_attributes": True}

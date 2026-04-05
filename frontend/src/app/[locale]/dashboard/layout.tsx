@@ -12,7 +12,7 @@ const navItems = [
   { key: 'gallery', path: '/dashboard/gallery', icon: '📸' },
   { key: 'qrCodes', path: '/dashboard/qr-codes', icon: '📱' },
   { key: 'reviews', path: '/dashboard/reviews', icon: '⭐' },
-  { key: 'settings', path: '/dashboard/settings', icon: '⚙️' },
+  { key: 'profile', path: '/dashboard/profile', icon: '👤' },
 ];
 
 export default function DashboardLayout({

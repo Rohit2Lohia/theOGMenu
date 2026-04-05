@@ -25,6 +25,16 @@ class Restaurant(Base, UUIDMixin, TimestampMixin):
     google_maps_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
+    # New Enhanced Profile Fields
+    our_story: Mapped[str | None] = mapped_column(Text, nullable=True)
+    phone_number: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    instagram_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    whatsapp_number: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    facebook_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    opening_hours: Mapped[str | None] = mapped_column(Text, nullable=True)
+    brand_accent_color: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
     # Relationships
     owner = relationship("User", back_populates="restaurants")
     menus = relationship("Menu", back_populates="restaurant", cascade="all, delete-orphan")
