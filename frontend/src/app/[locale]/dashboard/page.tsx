@@ -12,7 +12,7 @@ export default function DashboardOverview() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
-  
+
   const [loading, setLoading] = useState(true);
   const [restaurantSlug, setRestaurantSlug] = useState<string | null>(null);
   const [statsData, setStatsData] = useState({
