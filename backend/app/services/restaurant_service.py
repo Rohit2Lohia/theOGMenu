@@ -70,7 +70,7 @@ async def get_restaurant_by_slug(
     """Get a restaurant by its URL slug."""
     stmt = select(Restaurant).where(Restaurant.slug == slug)
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 
 async def get_restaurant_by_id(
@@ -79,7 +79,7 @@ async def get_restaurant_by_id(
     """Get a restaurant by ID."""
     stmt = select(Restaurant).where(Restaurant.id == restaurant_id)
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 
 async def get_restaurants_by_owner(

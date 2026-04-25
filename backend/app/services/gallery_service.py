@@ -59,7 +59,7 @@ async def delete_gallery_image(db: AsyncSession, image_id: UUID) -> bool:
     """Delete a gallery image."""
     stmt = select(GalleryImage).where(GalleryImage.id == image_id)
     result = await db.execute(stmt)
-    image = result.scalar_one_or_none()
+    image = result.scalars().first()
     if not image:
         return False
     

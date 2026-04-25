@@ -36,7 +36,7 @@ async def get_menus_by_restaurant(
 async def get_menu_by_id(db: AsyncSession, menu_id: UUID) -> Optional[Menu]:
     stmt = select(Menu).where(Menu.id == menu_id)
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 
 async def create_menu(
@@ -107,7 +107,7 @@ async def get_category_by_id(
 ) -> Optional[Category]:
     stmt = select(Category).where(Category.id == category_id)
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 
 async def create_category(
@@ -157,7 +157,7 @@ async def get_items_by_category(
 async def get_item_by_id(db: AsyncSession, item_id: UUID) -> Optional[Item]:
     stmt = select(Item).where(Item.id == item_id)
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 
 async def create_item(
@@ -222,7 +222,7 @@ async def get_active_menu_for_restaurant(
         .limit(1)
     )
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 
 # ── Full Menu (Public) ────────────────────────────────
@@ -237,7 +237,7 @@ async def get_full_menu(db: AsyncSession, menu_id: UUID) -> Optional[Menu]:
         )
     )
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
 
 async def get_full_public_data(db: AsyncSession, slug: str) -> Optional[dict]:
     """

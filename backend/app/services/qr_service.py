@@ -67,7 +67,7 @@ async def get_or_create_qr_code(
         (QRCode.restaurant_id == restaurant_id) & (QRCode.menu_id.is_(None))
     )
     result = await db.execute(stmt)
-    qr = result.scalar_one_or_none()
+    qr = result.scalars().first()
     
     if qr:
         return qr
@@ -75,7 +75,7 @@ async def get_or_create_qr_code(
     # Need restaurant slug for the stable URL
     stmt_rest = select(Restaurant).where(Restaurant.id == restaurant_id)
     result_rest = await db.execute(stmt_rest)
-    restaurant = result_rest.scalar_one_or_none()
+    restaurant = result_rest.scalars().first()
     
     if not restaurant:
         raise ValueError("Restaurant not found")
@@ -182,7 +182,7 @@ async def increment_scan_count(
     """Increment the scan count for a QR code."""
     stmt = select(QRCode).where(QRCode.id == qr_code_id)
     result = await db.execute(stmt)
-    qr = result.scalar_one_or_none()
+    qr = result.scalars().first()
     if qr:
         qr.scan_count += 1
         await db.flush()

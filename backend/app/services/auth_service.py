@@ -81,7 +81,7 @@ async def authenticate_with_firebase(
     # Check if user exists
     stmt = select(User).where(User.firebase_uid == firebase_uid)
     result = await db.execute(stmt)
-    user = result.scalar_one_or_none()
+    user = result.scalars().first()
 
     if user:
         return user, False
@@ -109,4 +109,4 @@ async def get_user_by_id(db: AsyncSession, user_id: UUID) -> Optional[User]:
     """Get a user by their ID."""
     stmt = select(User).where(User.id == user_id)
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalars().first()
