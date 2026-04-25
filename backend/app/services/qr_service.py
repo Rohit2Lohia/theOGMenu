@@ -63,7 +63,9 @@ async def get_or_create_qr_code(
     restaurant_id: UUID,
 ) -> QRCode:
     """Get existing QR code for a restaurant or create the stable one."""
-    stmt = select(QRCode).where(QRCode.restaurant_id == restaurant_id)
+    stmt = select(QRCode).where(
+        (QRCode.restaurant_id == restaurant_id) & (QRCode.menu_id.is_(None))
+    )
     result = await db.execute(stmt)
     qr = result.scalar_one_or_none()
     

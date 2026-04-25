@@ -1,39 +1,39 @@
 # Web framework
-fastapi==0.115.6
-uvicorn[standard]==0.34.0
+fastapi>=0.115.6
+uvicorn[standard]>=0.34.0
 
 # Database
-sqlalchemy[asyncio]==2.0.36
-aiosqlite==0.20.0
-alembic==1.14.1
+sqlalchemy[asyncio]>=2.0.36
+aiosqlite>=0.20.0
+alembic>=1.14.1
 
 # Validation & Settings
-pydantic==2.10.4
-pydantic-settings==2.7.1
+pydantic>=2.10.4
+pydantic-settings>=2.7.1
 
 # Auth
-python-jose[cryptography]==3.3.0
-firebase-admin==6.6.0
-passlib[bcrypt]==1.7.4
+python-jose[cryptography]>=3.3.0
+firebase-admin>=6.6.0
+passlib[bcrypt]>=1.7.4
 
 # Image handling
-cloudinary==1.41.0
-qrcode[pil]==8.0
-Pillow==11.1.0
-reportlab==4.4.10
+cloudinary>=1.41.0
+qrcode[pil]>=8.0
+Pillow>=11.1.0
+reportlab>=4.4.10
 
 # HTTP client (for Google Maps scraping)
-httpx==0.28.1
-beautifulsoup4==4.12.3
+httpx>=0.28.1
+beautifulsoup4>=4.12.3
 
 # Utils
-python-multipart==0.0.20
-python-dotenv==1.0.1
+python-multipart>=0.0.20
+python-dotenv>=1.0.1
 
 # Testing
-pytest==8.3.4
-pytest-asyncio==0.25.0
-httpx==0.28.1
+pytest>=8.3.4
+pytest-asyncio>=0.25.0
+httpx>=0.28.1
 
 # CORS
 # (included in FastAPI/Starlette)

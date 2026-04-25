@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 export type FoodType = 'veg' | 'non-veg' | 'egg' | 'vegan';
 
@@ -70,15 +71,10 @@ const FoodTypeIcon: React.FC<FoodTypeIconProps> = ({
   };
 
   return (
-    <div className={`food-type-wrapper ${className}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div className={cn("inline-flex items-center gap-2", className)}>
       {getIcon()}
       {showLabel && (
-        <span style={{ 
-          fontSize: '0.875rem', 
-          fontWeight: 600, 
-          color: 'var(--color-gray-700)',
-          textTransform: 'capitalize'
-        }}>
+        <span className="text-sm font-semibold text-gray-700 capitalize">
           {labels[type]}
         </span>
       )}

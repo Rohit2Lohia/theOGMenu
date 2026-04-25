@@ -1,6 +1,14 @@
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 /**
  * Utility functions
  */
+
+/** Merge Tailwind classes with clsx */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 /** Format price in Indian Rupees */
 export function formatPrice(price: number): string {

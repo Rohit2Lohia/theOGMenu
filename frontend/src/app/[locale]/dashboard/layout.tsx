@@ -3,15 +3,26 @@
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { 
+  LayoutDashboard, 
+  ClipboardList, 
+  Image as ImageIcon, 
+  QrCode, 
+  User, 
+  LogOut, 
+  Menu, 
+  X,
+  UtensilsCrossed
+} from 'lucide-react';
 import { isAuthenticated, getStoredUser, logout } from '@/lib/auth';
-import styles from './layout.module.css';
+import { cn } from '@/lib/utils';
 
 const navItems = [
-  { key: 'overview', path: '/dashboard', icon: '📊' },
-  { key: 'menuEditor', path: '/dashboard/menu-editor', icon: '📋' },
-  { key: 'gallery', path: '/dashboard/gallery', icon: '📸' },
-  { key: 'qrCodes', path: '/dashboard/qr-codes', icon: '📱' },
-  { key: 'profile', path: '/dashboard/profile', icon: '👤' },
+  { key: 'overview', path: '/dashboard', icon: LayoutDashboard },
+  { key: 'menuEditor', path: '/dashboard/menu-editor', icon: ClipboardList },
+  { key: 'gallery', path: '/dashboard/gallery', icon: ImageIcon },
+  { key: 'qrCodes', path: '/dashboard/qr-codes', icon: QrCode },
+  { key: 'profile', path: '/dashboard/profile', icon: User },
 ];
 
 export default function DashboardLayout({
@@ -40,69 +51,99 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className={styles.dashboard}>
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className={styles.overlay}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
-        <div className={styles.sidebarHeader}>
-          <div className={styles.logo}>
-            <span>🍽️</span>
-            <span className={styles.logoText}>theOGMenu</span>
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 transition-transform duration-300 lg:relative lg:translate-x-0",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="h-full flex flex-col">
+          <div className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                <UtensilsCrossed size={20} />
+              </div>
+              <span className="font-display text-xl font-extrabold text-gray-900 tracking-tight">theOGMenu</span>
+            </div>
           </div>
-        </div>
 
-        <nav className={styles.sidebarNav}>
-          {navItems.map((item) => (
-            <button
-              key={item.key}
-              className={`${styles.navItem} ${isActive(item.path) ? styles.navItemActive : ''}`}
-              onClick={() => {
-                router.push(item.path);
-                setSidebarOpen(false);
-              }}
+          <nav className="flex-1 px-4 py-4 space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.path);
+              return (
+                <button
+                  key={item.key}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200",
+                    active 
+                      ? "bg-primary/10 text-primary" 
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  )}
+                  onClick={() => {
+                    router.push(item.path);
+                    setSidebarOpen(false);
+                  }}
+                >
+                  <Icon size={20} className={active ? "text-primary" : "text-gray-400"} />
+                  <span>{t(`nav.${item.key}`)}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="p-4 border-t border-gray-50">
+            <button 
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200" 
+              onClick={logout}
             >
-              <span className={styles.navIcon}>{item.icon}</span>
-              <span>{t(`nav.${item.key}`)}</span>
+              <LogOut size={20} />
+              <span>Logout</span>
             </button>
-          ))}
-        </nav>
-
-        <div className={styles.sidebarFooter}>
-          <button className={styles.logoutBtn} onClick={logout}>
-            🚪 Logout
-          </button>
+          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className={styles.main}>
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className={styles.topbar}>
+        <header className="h-16 bg-white border-b border-gray-100 px-6 flex items-center justify-between sticky top-0 z-30">
           <button
-            className={styles.menuToggle}
+            className="p-2 -ml-2 text-gray-500 lg:hidden"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            ☰
+            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <div className={styles.topbarRight}>
-            <span className={styles.userName}>
-              {user?.name || 'Restaurant Owner'}
-            </span>
-            <div className={styles.avatar}>
+          
+          <div className="flex-1 lg:hidden ml-4">
+             <span className="font-display font-bold text-lg text-gray-900">Dashboard</span>
+          </div>
+
+          <div className="flex items-center gap-4 ml-auto">
+            <div className="hidden sm:block text-right">
+              <div className="text-sm font-bold text-gray-900 leading-none">
+                {user?.name || 'Restaurant Owner'}
+              </div>
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                Admin
+              </div>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-bold shadow-lg shadow-primary/20">
               {(user?.name?.[0] || 'R').toUpperCase()}
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className={styles.content}>
+        <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
           {children}
         </main>
       </div>
