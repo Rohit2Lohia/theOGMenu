@@ -96,6 +96,7 @@ async def get_or_create_qr_code(
     )
     db.add(qr)
     await db.flush()
+    await db.refresh(qr)
     return qr
 
 
