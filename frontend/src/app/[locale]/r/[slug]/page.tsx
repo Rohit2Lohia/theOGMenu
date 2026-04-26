@@ -47,8 +47,14 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
 
   if (loading) {
     return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-gray-50)' }}>
-        <div className="spinner"></div>
+      <div className="max-w-2xl mx-auto space-y-8 p-4">
+        <div className="h-48 bg-gray-200 rounded-2xl animate-pulse"></div>
+        <div className="h-10 bg-gray-200 rounded w-1/3 mx-auto animate-pulse"></div>
+        <div className="space-y-4 mt-12">
+          <div className="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+          <div className="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+          <div className="h-24 bg-gray-100 rounded-xl animate-pulse"></div>
+        </div>
       </div>
     );
   }
@@ -462,6 +468,10 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
           </div>
         </section>
       </main>
+
+      <footer style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-gray-400)', fontSize: '0.875rem', borderTop: '1px solid var(--color-gray-100)', marginTop: '2rem' }}>
+        Powered by <a href="/" style={{ fontWeight: 600, color: 'var(--color-primary-500)', textDecoration: 'none' }}>theOGMenu</a>
+      </footer>
     </div>
   );
 }

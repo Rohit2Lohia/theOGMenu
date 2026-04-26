@@ -11,7 +11,12 @@ import {
   Star, 
   MapPin, 
   Zap, 
-  UtensilsCrossed 
+  UtensilsCrossed,
+  Crown,
+  Shield,
+  Check,
+  X,
+  Sparkles
 } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -65,6 +70,12 @@ export default function LandingPage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-4"
           >
+            <a
+              href="#pricing"
+              className="hidden sm:block text-sm font-semibold text-gray-600 hover:text-primary transition-colors"
+            >
+              Pricing
+            </a>
             <LanguageToggle />
             <button 
               className="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-primary/40" 
@@ -247,6 +258,147 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── Pricing Section ─────────────────────── */}
+      <section id="pricing" className="py-24 lg:py-32 bg-gray-50/50 relative overflow-hidden">
+        {/* Background blobs */}
+        <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div className="absolute top-1/4 -left-[10%] w-[400px] h-[400px] rounded-full bg-primary/5 blur-[100px]" />
+          <div className="absolute bottom-1/4 -right-[10%] w-[400px] h-[400px] rounded-full bg-accent/5 blur-[100px]" />
+        </div>
+
+        <div className="container mx-auto px-6">
+          {/* Heading */}
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-5"
+            >
+              <Sparkles size={13} className="fill-primary" />
+              Simple, transparent pricing
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-display text-4xl lg:text-5xl font-extrabold text-gray-900 mb-5"
+            >
+              Start free. Scale when ready.
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-lg text-gray-500"
+            >
+              No credit card required. Upgrade any time as your restaurant grows.
+            </motion.p>
+          </div>
+
+          {/* Tier Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-start">
+            <PricingCard
+              icon={<Shield size={22} />}
+              iconBg="from-gray-500 to-gray-700"
+              name="Free"
+              price={0}
+              description="Everything you need to launch a beautiful digital menu."
+              features={[
+                '1 restaurant, 1 menu',
+                'QR code digital menu',
+                'Category & item management',
+                'Restaurant profile page',
+                'Single language',
+              ]}
+              limitations={[
+                'No menu item images',
+                'No online ordering',
+                'No analytics',
+              ]}
+              ctaLabel="Get Started Free"
+              ctaStyle="secondary"
+              onCta={handleGetStarted}
+              index={0}
+            />
+            <PricingCard
+              icon={<Zap size={22} />}
+              iconBg="from-blue-500 to-indigo-600"
+              name="Standard"
+              price={999}
+              description="Grow with ordering, images, and analytics."
+              features={[
+                'All Free features',
+                'Up to 3 restaurants & 3 menus',
+                'Menu item images',
+                'QR code with ordering',
+                'Order management system',
+                'Basic analytics dashboard',
+                'Multi-language (5 languages)',
+                'Employee role management',
+              ]}
+              limitations={[
+                'No KDS',
+                'No marketing automation',
+              ]}
+              ctaLabel="Upgrade to Standard"
+              ctaStyle="primary"
+              onCta={handleGetStarted}
+              highlighted
+              index={1}
+            />
+            <PricingCard
+              icon={<Crown size={22} />}
+              iconBg="from-amber-400 to-orange-500"
+              name="Premium"
+              price={2499}
+              description="The full suite for serious restaurant operators."
+              features={[
+                'All Standard features',
+                'Unlimited restaurants & menus',
+                'Kitchen Display System (KDS)',
+                'Basic inventory tracking',
+                'Table reservations',
+                'Advanced analytics & reporting',
+                'Marketing automation (email/SMS)',
+                'Customer feedback & ratings',
+                'Priority support',
+              ]}
+              limitations={[]}
+              ctaLabel="Go Premium"
+              ctaStyle="amber"
+              onCta={handleGetStarted}
+              index={2}
+            />
+          </div>
+
+          {/* Trust strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-16 max-w-3xl mx-auto text-center"
+          >
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-gray-500 mb-6">
+              <span className="flex items-center gap-1.5"><Check size={15} className="text-green-500" /> No credit card required</span>
+              <span className="flex items-center gap-1.5"><Check size={15} className="text-green-500" /> Cancel anytime</span>
+              <span className="flex items-center gap-1.5"><Check size={15} className="text-green-500" /> Free plan forever</span>
+              <span className="flex items-center gap-1.5"><Check size={15} className="text-green-500" /> Instant setup</span>
+            </div>
+            <p className="text-gray-400 text-sm">
+              Have questions?{' '}
+              <a href="mailto:hello@theogmenu.com" className="text-primary font-semibold hover:underline">
+                Talk to us
+              </a>
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── Footer ────────────────────────────────── */}
       <footer className="bg-secondary py-16 text-white/90">
         <div className="container mx-auto px-6">
@@ -277,6 +429,110 @@ export default function LandingPage() {
 }
 
 /* ── Sub-components ──────────────────────────────── */
+
+function PricingCard({
+  icon,
+  iconBg,
+  name,
+  price,
+  description,
+  features,
+  limitations,
+  ctaLabel,
+  ctaStyle,
+  onCta,
+  highlighted = false,
+  index,
+}: {
+  icon: React.ReactNode;
+  iconBg: string;
+  name: string;
+  price: number;
+  description: string;
+  features: string[];
+  limitations: string[];
+  ctaLabel: string;
+  ctaStyle: 'primary' | 'secondary' | 'amber';
+  onCta: () => void;
+  highlighted?: boolean;
+  index: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.12 }}
+      className={cn(
+        'relative rounded-[2rem] p-8 flex flex-col transition-all duration-300',
+        highlighted
+          ? 'bg-white border-2 border-primary shadow-2xl shadow-primary/10 scale-[1.03] md:scale-[1.05] z-10'
+          : 'bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50'
+      )}
+    >
+      {/* Most Popular badge */}
+      {highlighted && (
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+          <span className="bg-gradient-to-r from-primary to-primary-dark text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-primary/20 whitespace-nowrap">
+            ✦ Most Popular
+          </span>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="mb-6">
+        <div className={cn('w-12 h-12 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white mb-4', iconBg)}>
+          {icon}
+        </div>
+        <h3 className="font-display text-xl font-extrabold text-gray-900">{name}</h3>
+        <div className="mt-2 flex items-baseline gap-1">
+          {price === 0 ? (
+            <span className="text-3xl font-extrabold text-gray-900">Free</span>
+          ) : (
+            <>
+              <span className="text-sm font-semibold text-gray-400">₹</span>
+              <span className="text-3xl font-extrabold text-gray-900">{price.toLocaleString('en-IN')}</span>
+              <span className="text-sm text-gray-400">/month</span>
+            </>
+          )}
+        </div>
+        <p className="text-sm text-gray-500 mt-2 leading-relaxed">{description}</p>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-gray-100 mb-5" />
+
+      {/* Feature list */}
+      <ul className="space-y-2.5 flex-1 mb-7">
+        {features.map((f) => (
+          <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700">
+            <Check size={15} className="text-green-500 shrink-0 mt-0.5" />
+            <span>{f}</span>
+          </li>
+        ))}
+        {limitations.map((l) => (
+          <li key={l} className="flex items-start gap-2.5 text-sm text-gray-400">
+            <X size={15} className="text-gray-300 shrink-0 mt-0.5" />
+            <span>{l}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* CTA */}
+      <button
+        onClick={onCta}
+        className={cn(
+          'w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2',
+          ctaStyle === 'primary' && 'bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02]',
+          ctaStyle === 'secondary' && 'border-2 border-gray-200 text-gray-700 hover:border-primary hover:text-primary',
+          ctaStyle === 'amber' && 'bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-200 hover:shadow-amber-300 hover:scale-[1.02]',
+        )}
+      >
+        {ctaLabel} <ArrowRight size={15} />
+      </button>
+    </motion.div>
+  );
+}
 
 function LanguageToggle() {
   const router = useRouter();

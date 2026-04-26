@@ -40,6 +40,7 @@ class Restaurant(Base, UUIDMixin, TimestampMixin):
     menus = relationship("Menu", back_populates="restaurant", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="restaurant", cascade="all, delete-orphan")
     gallery_images = relationship("GalleryImage", back_populates="restaurant", cascade="all, delete-orphan")
+    qr_codes = relationship("QRCode", back_populates="restaurant", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Restaurant {self.name}>"

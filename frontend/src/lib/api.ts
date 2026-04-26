@@ -232,6 +232,20 @@ export const api = {
 
   getRestaurantStats: (token: string, restaurantId: string) =>
     apiRequest<any>(`/restaurants/${restaurantId}/stats`, { token }),
+
+  // Tiers
+  getTiers: (token?: string) =>
+    apiRequest<any>('/tiers/', token ? { token } : {}),
+
+  getMyTierUsage: (token: string) =>
+    apiRequest<any>('/tiers/my-usage', { token }),
+
+  requestTierUpgrade: (token: string, targetTier: string, message?: string) =>
+    apiRequest<any>('/tiers/upgrade-request', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ target_tier: targetTier, message }),
+    }),
 };
 
 export { ApiError };

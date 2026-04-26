@@ -23,6 +23,7 @@ out/
 .env.local
 .env.*.local
 *.env
+*service-account*.json
 
 # Database
 *.db
@@ -47,3 +48,6 @@ htmlcov/
 *.log
 qr_codes/
 *.pdf
+
+.agents/
+skills-lock.json

@@ -1,5 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import '@/styles/globals.css';
 
 export async function generateMetadata({
@@ -39,7 +40,9 @@ export default async function LocaleLayout({
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </NextIntlClientProvider>
       </body>
     </html>

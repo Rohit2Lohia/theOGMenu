@@ -36,5 +36,6 @@ class UserResponse(BaseModel):
     id: UUID
     phone_number: str
     name: Optional[str] = None
+    tier: str = "free"
 
     model_config = {"from_attributes": True}

@@ -10,6 +10,7 @@ from app.api.deps import get_current_user
 from app.models.user import User
 from app.schemas.restaurant import RestaurantCreate, RestaurantUpdate, RestaurantResponse, RestaurantStatsResponse
 from app.services import restaurant_service
+from app.tier_config import get_tier_limits
 from uuid import UUID
 
 router = APIRouter(prefix="/restaurants", tags=["Restaurants"])
@@ -22,6 +23,16 @@ async def create_restaurant(
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new restaurant."""
+    tier_limits = get_tier_limits(user.tier)
+    max_restaurants = tier_limits["max_restaurants"]
+    if max_restaurants != -1:  # -1 = unlimited
+        restaurants = await restaurant_service.get_restaurants_by_owner(db, user.id)
+        if len(restaurants) >= max_restaurants:
+            raise HTTPException(
+                status_code=403,
+                detail=f"{tier_limits['name']} tier limit reached: Max {max_restaurants} restaurant(s). Please upgrade to create more."
+            )
+            
     restaurant = await restaurant_service.create_restaurant(db, user.id, data)
     return restaurant
 
@@ -68,6 +79,26 @@ async def update_restaurant(
 
     updated = await restaurant_service.update_restaurant(db, UUID(restaurant_id), data)
     return updated
+
+
+@router.delete("/{restaurant_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_restaurant(
+    restaurant_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete a restaurant."""
+    from uuid import UUID
+    restaurant = await restaurant_service.get_restaurant_by_id(db, UUID(restaurant_id))
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    if restaurant.owner_id != user.id:
+        raise HTTPException(status_code=403, detail="Not your restaurant")
+
+    success = await restaurant_service.delete_restaurant(db, UUID(restaurant_id))
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to delete restaurant")
+
 
 
 @router.get("/public/{slug}", response_model=RestaurantResponse)

@@ -12,7 +12,8 @@ import {
   LogOut, 
   Menu, 
   X,
-  UtensilsCrossed
+  UtensilsCrossed,
+  Crown
 } from 'lucide-react';
 import { isAuthenticated, getStoredUser, logout } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,7 @@ const navItems = [
   { key: 'menuEditor', path: '/dashboard/menu-editor', icon: ClipboardList },
   { key: 'gallery', path: '/dashboard/gallery', icon: ImageIcon },
   { key: 'qrCodes', path: '/dashboard/qr-codes', icon: QrCode },
+  { key: 'subscription', path: '/dashboard/subscription', icon: Crown },
   { key: 'profile', path: '/dashboard/profile', icon: User },
 ];
 
@@ -42,6 +44,15 @@ export default function DashboardLayout({
       return;
     }
     setUser(getStoredUser());
+    // Refresh user profile to get latest tier info
+    import('@/lib/api').then(({ api }) => {
+      const token = getStoredUser() ? localStorage.getItem('theogmenu_access_token') : null;
+      if (token) {
+        api.getMe(token).then((me: any) => {
+          setUser((prev: any) => ({ ...prev, ...me }));
+        }).catch(() => {});
+      }
+    });
   }, [router]);
 
   const isActive = (path: string) => {
@@ -132,9 +143,14 @@ export default function DashboardLayout({
               <div className="text-sm font-bold text-gray-900 leading-none">
                 {user?.name || 'Restaurant Owner'}
               </div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                Admin
-              </div>
+              <span className={cn(
+                'text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mt-1 inline-block',
+                user?.tier === 'premium' ? 'bg-amber-100 text-amber-700' :
+                user?.tier === 'standard' ? 'bg-blue-100 text-blue-700' :
+                'bg-gray-100 text-gray-600'
+              )}>
+                {user?.tier || 'free'}
+              </span>
             </div>
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-bold shadow-lg shadow-primary/20">
               {(user?.name?.[0] || 'R').toUpperCase()}

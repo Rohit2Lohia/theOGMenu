@@ -6,10 +6,17 @@ from uuid import UUID
 
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from app.tier_config import get_tier_limits
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.api.deps import get_current_user
+from app.api.deps import (
+    get_current_user,
+    verify_restaurant_ownership,
+    verify_menu_ownership,
+    verify_category_ownership,
+    verify_item_ownership,
+)
 from app.models.user import User
 from app.schemas.menu import (
     MenuCreate, MenuUpdate, MenuResponse,
@@ -33,6 +40,7 @@ async def list_menus(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_restaurant_ownership(db, restaurant_id, user)
     return await menu_service.get_menus_by_restaurant(db, restaurant_id)
 
 
@@ -48,6 +56,18 @@ async def create_menu(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_restaurant_ownership(db, restaurant_id, user)
+    
+    tier_limits = get_tier_limits(user.tier)
+    max_menus = tier_limits["max_menus_per_restaurant"]
+    if max_menus != -1:  # -1 = unlimited
+        menus = await menu_service.get_menus_by_restaurant(db, restaurant_id)
+        if len(menus) >= max_menus:
+            raise HTTPException(
+                status_code=403,
+                detail=f"{tier_limits['name']} tier limit reached: Max {max_menus} menu(s) per restaurant. Please upgrade to create more."
+            )
+            
     return await menu_service.create_menu(db, restaurant_id, data)
 
 
@@ -58,6 +78,7 @@ async def update_menu(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_menu_ownership(db, menu_id, user)
     menu = await menu_service.update_menu(db, menu_id, data)
     if not menu:
         raise HTTPException(status_code=404, detail="Menu not found")
@@ -70,6 +91,7 @@ async def delete_menu(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_menu_ownership(db, menu_id, user)
     if not await menu_service.delete_menu(db, menu_id):
         raise HTTPException(status_code=404, detail="Menu not found")
 
@@ -86,6 +108,7 @@ async def list_categories(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_menu_ownership(db, menu_id, user)
     return await menu_service.get_categories_by_menu(db, menu_id)
 
 
@@ -101,6 +124,7 @@ async def create_category(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_menu_ownership(db, menu_id, user)
     return await menu_service.create_category(db, menu_id, data)
 
 
@@ -115,6 +139,7 @@ async def update_category(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_category_ownership(db, category_id, user)
     category = await menu_service.update_category(db, category_id, data)
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
@@ -131,6 +156,7 @@ async def delete_category(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_category_ownership(db, category_id, user)
     if not await menu_service.delete_category(db, category_id):
         raise HTTPException(status_code=404, detail="Category not found")
 
@@ -147,6 +173,7 @@ async def list_items(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_category_ownership(db, category_id, user)
     return await menu_service.get_items_by_category(db, category_id)
 
 
@@ -162,6 +189,7 @@ async def create_item(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_category_ownership(db, category_id, user)
     return await menu_service.create_item(db, category_id, data)
 
 
@@ -172,6 +200,7 @@ async def update_item(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_item_ownership(db, item_id, user)
     item = await menu_service.update_item(db, item_id, data)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
@@ -188,6 +217,7 @@ async def delete_item(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await verify_item_ownership(db, item_id, user)
     if not await menu_service.delete_item(db, item_id):
         raise HTTPException(status_code=404, detail="Item not found")
 
@@ -203,6 +233,7 @@ async def toggle_item_availability(
     db: AsyncSession = Depends(get_db),
 ):
     """Quick toggle for item availability."""
+    await verify_item_ownership(db, item_id, user)
     item = await menu_service.toggle_item_availability(db, item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")

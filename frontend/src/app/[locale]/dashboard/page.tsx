@@ -14,7 +14,9 @@ import {
   ScrollText, 
   Image as ImageIcon,
   Rocket,
-  CheckCircle2
+  CheckCircle2,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { getAccessToken } from '@/lib/auth';
@@ -28,6 +30,7 @@ export default function DashboardOverview() {
 
   const [loading, setLoading] = useState(true);
   const [restaurantSlug, setRestaurantSlug] = useState<string | null>(null);
+  const [userTier, setUserTier] = useState<string>('free');
   const [statsData, setStatsData] = useState({
     totalScans: 0,
     menuItems: 0,
@@ -45,7 +48,11 @@ export default function DashboardOverview() {
 
     try {
       setLoading(true);
-      const rests = await api.getMyRestaurants(token);
+      const [rests, me] = await Promise.all([
+        api.getMyRestaurants(token),
+        api.getMe(token),
+      ]);
+      if (me?.tier) setUserTier(me.tier);
       if (rests && rests.length > 0) {
         const activeRest = rests[0];
         setRestaurantSlug(activeRest.slug);
@@ -169,6 +176,32 @@ export default function DashboardOverview() {
           );
         })}
       </div>
+
+      {/* Upgrade Banner — free tier only */}
+      {!loading && userTier === 'free' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-gradient-to-r from-primary/5 via-amber-50 to-primary/5 rounded-3xl p-5 border border-primary/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shrink-0">
+              <Sparkles size={22} />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900">Unlock More Features</h3>
+              <p className="text-sm text-gray-500">Get menu images, ordering, analytics & more with Standard plan</p>
+            </div>
+          </div>
+          <button
+            onClick={() => router.push('/dashboard/subscription')}
+            className="btn btn-primary flex items-center gap-2 shrink-0"
+          >
+            Explore Plans <ArrowRight size={16} />
+          </button>
+        </motion.div>
+      )}
 
       {/* Quick Actions */}
       <div className="space-y-6">

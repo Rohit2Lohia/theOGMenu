@@ -25,7 +25,7 @@ class QRCode(Base, UUIDMixin, TimestampMixin):
     scan_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     # Relationships
-    restaurant = relationship("Restaurant", backref="qr_codes")
+    restaurant = relationship("Restaurant", back_populates="qr_codes")
     menu = relationship("Menu", back_populates="qr_codes")
 
     def __repr__(self):

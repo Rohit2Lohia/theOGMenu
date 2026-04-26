@@ -106,6 +106,17 @@ async def update_restaurant(
     await db.flush()
     return restaurant
 
+async def delete_restaurant(db: AsyncSession, restaurant_id: UUID) -> bool:
+    """Delete a restaurant and all associated data (handled by cascade)."""
+    restaurant = await get_restaurant_by_id(db, restaurant_id)
+    if not restaurant:
+        return False
+    
+    await db.delete(restaurant)
+    await db.flush()
+    return True
+
+
 async def get_restaurant_stats(
     db: AsyncSession, restaurant_id: UUID
 ) -> RestaurantStatsResponse:

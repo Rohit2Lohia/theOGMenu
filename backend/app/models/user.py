@@ -17,6 +17,7 @@ class User(Base, UUIDMixin, TimestampMixin):
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    tier: Mapped[str] = mapped_column(String(20), default="free", server_default="free", nullable=False)
     
     # Relationships
     restaurants = relationship("Restaurant", back_populates="owner", cascade="all, delete-orphan")

@@ -19,6 +19,7 @@ from app.api.v1.menus import router as menus_router
 from app.api.v1.gallery import router as gallery_router
 from app.api.v1.reviews import router as reviews_router
 from app.api.v1.qr import router as qr_router
+from app.api.v1.tier import router as tier_router
 
 
 @asynccontextmanager
@@ -64,6 +65,25 @@ app.include_router(menus_router, prefix=API_PREFIX)
 app.include_router(gallery_router, prefix=API_PREFIX)
 app.include_router(reviews_router, prefix=API_PREFIX)
 app.include_router(qr_router, prefix=API_PREFIX)
+app.include_router(tier_router, prefix=API_PREFIX)
+
+
+# Global Exception Handler
+from fastapi import Request, status
+from fastapi.responses import JSONResponse
+import logging
+
+logger = logging.getLogger("uvicorn.error")
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Catch unhandled exceptions globally, log them, and hide stack traces from the client."""
+    logger.error(f"Unhandled Exception on {request.method} {request.url}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "An unexpected server error occurred. Please try again later."},
+    )
+
 
 
 @app.get("/", tags=["Health"])
