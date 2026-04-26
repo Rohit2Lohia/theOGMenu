@@ -2,7 +2,7 @@
 QRCode model.
 """
 
-from sqlalchemy import String, Integer, ForeignKey, JSON, Text
+from sqlalchemy import String, Integer, ForeignKey, JSON, Text, Date
 from sqlalchemy import Uuid as UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -23,6 +23,8 @@ class QRCode(Base, UUIDMixin, TimestampMixin):
     target_url: Mapped[str] = mapped_column(Text, nullable=False)
     style_config: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     scan_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    today_scan_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    last_scan_date: Mapped[Date | None] = mapped_column(Date, nullable=True)
 
     # Relationships
     restaurant = relationship("Restaurant", back_populates="qr_codes")

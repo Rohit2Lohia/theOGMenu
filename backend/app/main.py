@@ -20,6 +20,10 @@ from app.api.v1.gallery import router as gallery_router
 from app.api.v1.reviews import router as reviews_router
 from app.api.v1.qr import router as qr_router
 from app.api.v1.tier import router as tier_router
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from app.rate_limit import limiter
 
 
 @asynccontextmanager
@@ -43,6 +47,11 @@ app = FastAPI(
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
+
+# Rate Limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 # CORS Middleware
 app.add_middleware(

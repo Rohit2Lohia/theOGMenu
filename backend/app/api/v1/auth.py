@@ -21,13 +21,17 @@ from app.services.auth_service import (
     get_user_by_id,
 )
 from app.utils.security import verify_token
+from fastapi import Request
+from app.rate_limit import limiter
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/login", response_model=TokenResponse)
+@limiter.limit("5/minute")
 async def login_with_firebase(
-    request: FirebaseTokenRequest,
+    request: Request,
+    body: FirebaseTokenRequest,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -35,7 +39,7 @@ async def login_with_firebase(
     Creates a new user account if one doesn't exist.
     """
     try:
-        user, is_new = await authenticate_with_firebase(db, request.firebase_token)
+        user, is_new = await authenticate_with_firebase(db, body.firebase_token)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -54,14 +58,16 @@ async def login_with_firebase(
 
 
 @router.post("/refresh", response_model=TokenResponse)
+@limiter.limit("10/minute")
 async def refresh_access_token(
-    request: RefreshTokenRequest,
+    request: Request,
+    body: RefreshTokenRequest,
     db: AsyncSession = Depends(get_db),
 ):
     """Exchange a refresh token for a new access + refresh token pair."""
     from uuid import UUID
 
-    payload = verify_token(request.refresh_token, token_type="refresh")
+    payload = verify_token(body.refresh_token, token_type="refresh")
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

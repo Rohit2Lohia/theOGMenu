@@ -5,7 +5,7 @@ Menu, Category, and Item API routes.
 from uuid import UUID
 
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request, Response
 from app.tier_config import get_tier_limits
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,6 +24,7 @@ from app.schemas.menu import (
     ItemCreate, ItemUpdate, ItemResponse,
 )
 from app.services import menu_service
+from app.rate_limit import limiter
 
 router = APIRouter(tags=["Menus"])
 
@@ -292,7 +293,10 @@ async def get_public_menu(
     response_model=dict,
     tags=["Public"],
 )
+@limiter.limit("30/minute")
 async def get_stable_public_menu(
+    request: Request,
+    response: Response,
     slug: str,
     qr_id: Optional[UUID] = Query(None),
     db: AsyncSession = Depends(get_db),
@@ -304,7 +308,10 @@ async def get_stable_public_menu(
     from app.services import restaurant_service, qr_service
     
     if qr_id:
-        await qr_service.increment_scan_count(db, qr_id)
+        cookie_name = f"scanned_{qr_id}"
+        if not request.cookies.get(cookie_name):
+            await qr_service.increment_scan_count(db, qr_id)
+            response.set_cookie(cookie_name, "1", max_age=86400)
 
     restaurant = await restaurant_service.get_restaurant_by_slug(db, slug)
     if not restaurant:
@@ -355,7 +362,10 @@ async def get_stable_public_menu(
     response_model=dict,
     tags=["Public"],
 )
+@limiter.limit("30/minute")
 async def get_full_public_data(
+    request: Request,
+    response: Response,
     slug: str,
     qr_id: Optional[UUID] = Query(None),
     db: AsyncSession = Depends(get_db),
@@ -366,7 +376,10 @@ async def get_full_public_data(
     """
     from app.services import qr_service
     if qr_id:
-        await qr_service.increment_scan_count(db, qr_id)
+        cookie_name = f"scanned_{qr_id}"
+        if not request.cookies.get(cookie_name):
+            await qr_service.increment_scan_count(db, qr_id)
+            response.set_cookie(cookie_name, "1", max_age=86400)
 
     data = await menu_service.get_full_public_data(db, slug)
     if not data:

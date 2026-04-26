@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import styles from '../../m/[restaurantId]/page.module.css'; // Reuse existing styles
 import FoodTypeIcon from '@/components/FoodTypeIcon';
@@ -10,6 +10,9 @@ import MenuHero from '@/components/MenuHero';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 export default function StableCustomerMenuPage({ params }: { params: { slug: string } }) {
+  const searchParams = useSearchParams();
+  const qrId = searchParams.get('qr');
+  
   const [menu, setMenu] = useState<any>(null);
   const [restaurant, setRestaurant] = useState<any>(null);
   const [gallery, setGallery] = useState<any[]>([]);
@@ -23,7 +26,11 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
     async function loadPublicData() {
       try {
         // Use the consolidated endpoint to fetch everything in one go
-        const res = await fetch(`${API_BASE}/public/restaurant/${params.slug}/full`);
+        let url = `${API_BASE}/public/restaurant/${params.slug}/full`;
+        if (qrId) {
+          url += `?qr_id=${qrId}`;
+        }
+        const res = await fetch(url, { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to load menu data');
         
         const data = await res.json();
@@ -43,7 +50,7 @@ export default function StableCustomerMenuPage({ params }: { params: { slug: str
       }
     }
     loadPublicData();
-  }, [params.slug]);
+  }, [params.slug, qrId]);
 
   if (loading) {
     return (

@@ -87,7 +87,7 @@
       "profile": "Profile"
     },
     "stats": {
-      "totalScans": "Total Scans",
+      "todayScans": "Today's Scans",
       "menuItems": "Menu Items",
       "menus": "Total Menus",
       "galleryPhotos": "Gallery Photos"

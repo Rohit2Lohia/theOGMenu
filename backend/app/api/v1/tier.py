@@ -19,6 +19,8 @@ from app.schemas.tier import (
     TierUpgradeRequest,
     TierUpgradeResponse,
 )
+from fastapi import Request
+from app.rate_limit import limiter
 
 router = APIRouter(prefix="/tiers", tags=["Tiers"])
 
@@ -72,7 +74,9 @@ async def get_my_usage(
 
 
 @router.post("/upgrade-request", response_model=TierUpgradeResponse)
+@limiter.limit("5/minute")
 async def request_upgrade(
+    request: Request,
     data: TierUpgradeRequest,
     user: User = Depends(get_current_user),
 ):

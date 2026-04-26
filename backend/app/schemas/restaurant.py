@@ -68,6 +68,7 @@ class RestaurantResponse(BaseModel):
 
 class RestaurantStatsResponse(BaseModel):
     total_scans: int = 0
+    today_scans: int = 0
     total_menus: int = 0
     total_items: int = 0
     total_gallery_photos: int = 0

@@ -122,9 +122,16 @@ async def get_restaurant_stats(
 ) -> RestaurantStatsResponse:
     """Get aggregated statistics for a restaurant."""
     
-    # Total Scans
-    stmt_scans = select(func.coalesce(func.sum(QRCode.scan_count), 0)).where(QRCode.restaurant_id == restaurant_id)
-    total_scans = (await db.execute(stmt_scans)).scalar() or 0
+    from datetime import datetime, timezone
+    
+    # Total Scans and Today Scans
+    stmt_qr = select(QRCode).where(QRCode.restaurant_id == restaurant_id)
+    qr_codes = (await db.execute(stmt_qr)).scalars().all()
+    
+    total_scans = sum(qr.scan_count for qr in qr_codes)
+    
+    today = datetime.now(timezone.utc).date()
+    today_scans = sum(qr.today_scan_count for qr in qr_codes if qr.last_scan_date == today)
 
     # Total Menus
     stmt_menus = select(func.count(Menu.id)).where(Menu.restaurant_id == restaurant_id)
@@ -146,6 +153,7 @@ async def get_restaurant_stats(
 
     return RestaurantStatsResponse(
         total_scans=total_scans,
+        today_scans=today_scans,
         total_menus=total_menus,
         total_items=total_items,
         total_gallery_photos=total_photos

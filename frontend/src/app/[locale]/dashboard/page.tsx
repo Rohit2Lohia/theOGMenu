@@ -32,7 +32,7 @@ export default function DashboardOverview() {
   const [restaurantSlug, setRestaurantSlug] = useState<string | null>(null);
   const [userTier, setUserTier] = useState<string>('free');
   const [statsData, setStatsData] = useState({
-    totalScans: 0,
+    todayScans: 0,
     menuItems: 0,
     menus: 0,
     galleryPhotos: 0,
@@ -58,7 +58,7 @@ export default function DashboardOverview() {
         setRestaurantSlug(activeRest.slug);
         const stats = await api.getRestaurantStats(token, activeRest.id);
         setStatsData({
-          totalScans: stats.total_scans,
+          todayScans: stats.today_scans,
           menuItems: stats.total_items,
           menus: stats.total_menus,
           galleryPhotos: stats.total_gallery_photos,
@@ -72,7 +72,7 @@ export default function DashboardOverview() {
   }
 
   const stats = [
-    { key: 'totalScans', value: statsData.totalScans.toString(), icon: BarChart3, color: 'text-primary', bg: 'bg-primary/10' },
+    { key: 'todayScans', value: statsData.todayScans.toString(), icon: BarChart3, color: 'text-primary', bg: 'bg-primary/10' },
     { key: 'menuItems', value: statsData.menuItems.toString(), icon: Utensils, color: 'text-green-600', bg: 'bg-green-100' },
     { key: 'menus', value: statsData.menus.toString(), icon: ScrollText, color: 'text-amber-600', bg: 'bg-amber-100' },
     { key: 'galleryPhotos', value: statsData.galleryPhotos.toString(), icon: ImageIcon, color: 'text-blue-600', bg: 'bg-blue-100' },

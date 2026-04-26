@@ -80,10 +80,14 @@ async def get_or_create_qr_code(
     if not restaurant:
         raise ValueError("Restaurant not found")
 
-    # Stable URL: /en/r/slug
-    target_url = f"{settings.FRONTEND_URL}/en/r/{restaurant.slug}"
+    import uuid
+    qr_id = uuid.uuid4()
+    
+    # Stable URL: /en/r/slug?qr=<qr_id>
+    target_url = f"{settings.FRONTEND_URL}/en/r/{restaurant.slug}?qr={qr_id}"
 
     qr = QRCode(
+        id=qr_id,
         restaurant_id=restaurant_id,
         label="Main",
         target_url=target_url,
@@ -181,10 +185,21 @@ async def increment_scan_count(
     db: AsyncSession, qr_code_id: UUID
 ) -> Optional[QRCode]:
     """Increment the scan count for a QR code."""
+    from datetime import datetime, timezone
+    
     stmt = select(QRCode).where(QRCode.id == qr_code_id)
     result = await db.execute(stmt)
     qr = result.scalars().first()
     if qr:
         qr.scan_count += 1
+        
+        # Track daily scans
+        today = datetime.now(timezone.utc).date()
+        if qr.last_scan_date != today:
+            qr.today_scan_count = 1
+            qr.last_scan_date = today
+        else:
+            qr.today_scan_count += 1
+            
         await db.flush()
     return qr
