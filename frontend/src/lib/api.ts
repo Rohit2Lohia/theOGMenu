@@ -20,6 +20,8 @@ class ApiError extends Error {
   }
 }
 
+import { logout } from './auth';
+
 async function apiRequest<T>(
   endpoint: string,
   options: ApiOptions = {}
@@ -42,6 +44,14 @@ async function apiRequest<T>(
   });
 
   if (!response.ok) {
+    // If we get a 401 Unauthorized, and it's not the login endpoint,
+    // trigger a global logout because the session has likely expired.
+    if (response.status === 401 && !endpoint.includes('/auth/login')) {
+      if (typeof window !== 'undefined') {
+        logout();
+      }
+    }
+
     const errorData = await response.json().catch(() => null);
     throw new ApiError(
       errorData?.detail || `API Error: ${response.status}`,
