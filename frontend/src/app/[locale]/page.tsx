@@ -33,6 +33,10 @@ export default function LandingPage() {
     }
   };
 
+  const handleSeeDemo = () => {
+    router.push('/m/demo');
+  };
+
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -137,7 +141,10 @@ export default function LandingPage() {
                 {t('landing.hero.cta')}
                 <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="btn btn-secondary btn-lg h-14 px-8 border-gray-200 hover:bg-gray-50">
+              <button 
+                className="btn btn-secondary btn-lg h-14 px-8 border-gray-200 hover:bg-gray-50"
+                onClick={handleSeeDemo}
+              >
                 {t('landing.hero.secondaryCta')}
               </button>
             </motion.div>

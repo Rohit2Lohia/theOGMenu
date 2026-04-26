@@ -25,7 +25,17 @@ export default function MenuEditorPage() {
   
   const [newCatName, setNewCatName] = useState('');
   const [activeNewItemCat, setActiveNewItemCat] = useState<string | null>(null);
-  const [newItem, setNewItem] = useState({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' });
+  const [newItem, setNewItem] = useState({ 
+    name: '', 
+    price: '', 
+    desc: '', 
+    type: 'veg', 
+    calories: '', 
+    tags: '',
+    is_bestseller: false,
+    is_new: false,
+    is_spicy: false
+  });
 
   // Editing State
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
@@ -249,11 +259,17 @@ export default function MenuEditorPage() {
         food_type: newItem.type,
         calories: newItem.calories ? parseInt(newItem.calories) : null,
         tags: newItem.tags ? newItem.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        is_bestseller: newItem.is_bestseller,
+        is_new: newItem.is_new,
+        is_spicy: newItem.is_spicy,
         is_available: true
       });
       setItemsMap({ ...itemsMap, [catId]: [...(itemsMap[catId] || []), added] });
       setActiveNewItemCat(null);
-      setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' });
+      setNewItem({ 
+        name: '', price: '', desc: '', type: 'veg', calories: '', tags: '',
+        is_bestseller: false, is_new: false, is_spicy: false
+      });
       setToast({ message: `Item "${added.name}" added!`, type: 'success' });
     } catch (err: any) {
       setToast({ message: 'Failed to add item: ' + err.message, type: 'error' });
@@ -273,14 +289,20 @@ export default function MenuEditorPage() {
         description: newItem.desc,
         food_type: newItem.type,
         calories: newItem.calories ? parseInt(newItem.calories) : null,
-        tags: newItem.tags ? newItem.tags.split(',').map(t => t.trim()).filter(Boolean) : []
+        tags: newItem.tags ? newItem.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        is_bestseller: newItem.is_bestseller,
+        is_new: newItem.is_new,
+        is_spicy: newItem.is_spicy
       });
       setItemsMap({
         ...itemsMap,
         [catId]: itemsMap[catId].map(i => i.id === editingItemId ? updated : i)
       });
       setEditingItemId(null);
-      setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' });
+      setNewItem({ 
+        name: '', price: '', desc: '', type: 'veg', calories: '', tags: '',
+        is_bestseller: false, is_new: false, is_spicy: false
+      });
       setToast({ message: `Item "${updated.name}" updated!`, type: 'success' });
     } catch (err: any) {
       setToast({ message: 'Failed to update item: ' + err.message, type: 'error' });
@@ -320,7 +342,10 @@ export default function MenuEditorPage() {
       desc: item.description || '',
       type: item.food_type,
       calories: item.calories?.toString() || '',
-      tags: item.tags?.join(', ') || ''
+      tags: item.tags?.join(', ') || '',
+      is_bestseller: item.is_bestseller || false,
+      is_new: item.is_new || false,
+      is_spicy: item.is_spicy || false
     });
   }
 
@@ -492,25 +517,42 @@ export default function MenuEditorPage() {
                             <input type="number" placeholder="Calories" className="input sm" value={newItem.calories} onChange={e => setNewItem({...newItem, calories: e.target.value})} />
                             <input type="text" placeholder="Tags (comma separated)" className="input sm" value={newItem.tags} onChange={e => setNewItem({...newItem, tags: e.target.value})} />
                           </div>
+                          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '0.75rem', paddingLeft: '0.5rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: 'var(--text-sm)', cursor: 'pointer' }}>
+                              <input type="checkbox" checked={newItem.is_bestseller} onChange={e => setNewItem({...newItem, is_bestseller: e.target.checked})} />
+                              Bestseller
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: 'var(--text-sm)', cursor: 'pointer' }}>
+                              <input type="checkbox" checked={newItem.is_new} onChange={e => setNewItem({...newItem, is_new: e.target.checked})} />
+                              New Item
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: 'var(--text-sm)', cursor: 'pointer' }}>
+                              <input type="checkbox" checked={newItem.is_spicy} onChange={e => setNewItem({...newItem, is_spicy: e.target.checked})} />
+                              Spicy 🌶️
+                            </label>
+                          </div>
                           <div style={{ display: 'flex', gap: '0.75rem' }}>
                             <button type="submit" className="btn btn-primary btn-sm">Update Item</button>
-                            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditingItemId(null); setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '' }); }}>Cancel</button>
+                            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditingItemId(null); setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '', is_bestseller: false, is_new: false, is_spicy: false }); }}>Cancel</button>
                           </div>
                         </form>
                       ) : (
                         /* Standard Item Row */
                         <div key={item.id} className="hover-effect" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'var(--color-gray-50)', borderRadius: 'var(--radius-lg)', border: '1px solid transparent', transition: 'all 0.2s' }}>
                           <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <FoodTypeIcon type={item.food_type} />
-                              <strong style={{ fontSize: 'var(--text-base)' }}>{item.name}</strong>
-                            </div>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                               <FoodTypeIcon type={item.food_type} />
+                               <strong style={{ fontSize: 'var(--text-base)' }}>{item.name}</strong>
+                               {item.is_bestseller && <span style={{ fontSize: '0.6rem', background: 'var(--color-primary)', color: 'white', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>BESTSELLER</span>}
+                               {item.is_new && <span style={{ fontSize: '0.6rem', background: '#10B981', color: 'white', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>NEW</span>}
+                               {item.is_spicy && <span>🌶️</span>}
+                             </div>
                             {item.description && <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem', marginBottom: '0.25rem', lineHeight: '1.4' }}>{item.description}</p>}
                             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
                               {item.calories && <span style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', background: 'var(--color-gray-100)', borderRadius: '4px', color: 'var(--color-gray-600)' }}>{item.calories} kcal</span>}
-                              {item.tags?.map((tag: string, i: number) => (
-                                <span key={i} style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', background: 'var(--color-primary-50)', borderRadius: '4px', color: 'var(--color-primary)' }}>{tag}</span>
-                              ))}
+                               {item.tags?.map((tag: string, i: number) => (
+                                 <span key={i} style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', background: 'var(--color-primary-50)', borderRadius: '4px', color: 'var(--color-primary)' }}>#{tag}</span>
+                               ))}
                             </div>
                             <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)', marginTop: '0.25rem' }}>₹{item.price}</div>
                           </div>
@@ -567,13 +609,27 @@ export default function MenuEditorPage() {
                       />
                       <input type="text" placeholder="Short description..." className="input" value={newItem.desc} onChange={e => setNewItem({...newItem, desc: e.target.value})} />
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                      <input type="number" placeholder="Calories (kcal)" className="input" value={newItem.calories} onChange={e => setNewItem({...newItem, calories: e.target.value})} />
-                      <input type="text" placeholder="Tags (e.g. Vegan, Gluten-Free)" className="input" value={newItem.tags} onChange={e => setNewItem({...newItem, tags: e.target.value})} />
-                    </div>
+                     <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                       <input type="number" placeholder="Calories (kcal)" className="input" value={newItem.calories} onChange={e => setNewItem({...newItem, calories: e.target.value})} />
+                       <input type="text" placeholder="Tags (e.g. Vegan, Gluten-Free)" className="input" value={newItem.tags} onChange={e => setNewItem({...newItem, tags: e.target.value})} />
+                     </div>
+                     <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, cursor: 'pointer' }}>
+                         <input type="checkbox" checked={newItem.is_bestseller} onChange={e => setNewItem({...newItem, is_bestseller: e.target.checked})} />
+                         Bestseller
+                       </label>
+                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, cursor: 'pointer' }}>
+                         <input type="checkbox" checked={newItem.is_new} onChange={e => setNewItem({...newItem, is_new: e.target.checked})} />
+                         New Item
+                       </label>
+                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, cursor: 'pointer' }}>
+                         <input type="checkbox" checked={newItem.is_spicy} onChange={e => setNewItem({...newItem, is_spicy: e.target.checked})} />
+                         Spicy 🌶️
+                       </label>
+                     </div>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                       <button type="submit" className="btn btn-primary">Add Item</button>
-                      <button type="button" className="btn btn-ghost" onClick={() => setActiveNewItemCat(null)}>Cancel</button>
+                       <button type="button" className="btn btn-ghost" onClick={() => { setActiveNewItemCat(null); setNewItem({ name: '', price: '', desc: '', type: 'veg', calories: '', tags: '', is_bestseller: false, is_new: false, is_spicy: false }); }}>Cancel</button>
                     </div>
                   </form>
                 ) : (

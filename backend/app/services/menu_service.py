@@ -297,10 +297,12 @@ async def get_full_public_data(db: AsyncSession, slug: str) -> Optional[dict]:
                         "food_type": item.food_type,
                         "is_available": item.is_available,
                         "is_bestseller": item.is_bestseller,
+                        "is_new": item.is_new,
                         "is_spicy": item.is_spicy,
                         "calories": item.calories,
-                        "tags": item.tags,
-                        "image_url": item.image_url
+                        "tags": item.tags or [],
+                        "image_url": item.image_url,
+                        "discounted_price": item.discounted_price
                     }
                     for item in cat.items if item.is_available
                 ]

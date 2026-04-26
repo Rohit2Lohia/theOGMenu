@@ -22,8 +22,17 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
   useEffect(() => {
     async function loadPublicData() {
       try {
-        // 1. Fetch Menu
-        const menuRes = await fetch(`${API_BASE}/public/menus/${params.restaurantId}`);
+        // 1. Fetch Menu (Check if it's a UUID or a slug)
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.restaurantId);
+        
+        let menuRes;
+        if (isUUID) {
+          menuRes = await fetch(`${API_BASE}/public/menus/${params.restaurantId}`);
+        } else {
+          // It's a slug
+          menuRes = await fetch(`${API_BASE}/public/restaurant/${params.restaurantId}/menu`);
+        }
+
         if (!menuRes.ok) throw new Error('Menu fetch failed');
         const menuData = await menuRes.json();
         setMenu(menuData);
@@ -269,6 +278,9 @@ export default function CustomerMenuPage({ params }: { params: { restaurantId: s
                         <FoodTypeIcon type={item.food_type} size={14} />
                         <span className="menu-item-name">
                           {item.name}
+                          {item.is_bestseller && <span style={{ fontSize: '0.65rem', background: 'var(--color-primary)', color: 'white', padding: '1px 6px', borderRadius: '4px', marginLeft: '0.5rem', verticalAlign: 'middle', fontWeight: 700 }}>BESTSELLER</span>}
+                          {item.is_new && <span style={{ fontSize: '0.65rem', background: '#10B981', color: 'white', padding: '1px 6px', borderRadius: '4px', marginLeft: '0.5rem', verticalAlign: 'middle', fontWeight: 700 }}>NEW</span>}
+                          {item.is_spicy && <span style={{ marginLeft: '0.4rem', fontSize: '0.8rem' }}>🌶️</span>}
                           {item.calories && (
                             <span style={{ fontSize: '0.75rem', color: 'var(--color-gray-400)', fontWeight: 400, marginLeft: '0.5rem', fontFamily: 'var(--font-primary)' }}>
                               ({item.calories} kcal)
